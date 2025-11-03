@@ -1,0 +1,118 @@
+set -euo pipefail
+
+BASE="$(cd "$(dirname "$0")/.." && pwd)"
+DOWNLOADS_BASE="${BASE}/downloads"
+WORK_BASE="${BASE}/work"
+OUTPUT_BASE="${BASE}/output"
+
+export PKG_CONFIG_SYSROOT_DIR="$OUTPUT_BASE"
+
+SOURCE_ARCHIVE="$PKGNAME-$PKGVER.tar.gz"
+WORK="$WORK_BASE/$PKGNAME-$PKGVER"
+
+run() {
+    ACTION="${1:-}"
+    case "$ACTION" in
+        download)
+            echo "Downloading ${PKGNAME}"
+            download
+            ;;
+        build)
+            echo "Building ${PKGNAME}"
+            build
+            ;;
+        *)
+            echo "Usage: $(basename $0) {download|build}" >&2
+            exit 1
+            ;;
+    esac
+}
+
+fetch_url() {
+    URL="$1"
+
+    mkdir -p "$DOWNLOADS_BASE"
+    wget -q "$1" -O "$DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified"
+
+    echo "$SOURCE_ARCHIVE_SHA256 $DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified" | sha256sum --check --status \
+        || { echo "Error: checksum failed for $SOURCE_ARCHIVE" >&2; exit 1; }
+    mv "$DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified" "$DOWNLOADS_BASE/$SOURCE_ARCHIVE"
+}
+
+extract() {
+    rm -rf "$WORK"
+    mkdir -p "$WORK"
+    tar -xf "$DOWNLOADS_BASE/$SOURCE_ARCHIVE" --strip-components 1 -C "$WORK"
+}
+
+setup_output() {
+    mkdir -p "${OUTPUT_BASE}"
+}
+
+TARGET_CPU_FAMILY="x86_64"
+TARGET_ARCH="x86_64-w64-mingw32"
+
+generate_meson_cross() {
+    cat <<EOF > meson_cross.txt
+[binaries]
+c = ['clang', '--target=$TARGET_ARCH']
+cpp = ['clang++', '--target=$TARGET_ARCH']
+ar = 'llvm-ar'
+ranlib = 'llvm-ranlib'
+strip = 'llvm-strip'
+#windres = 'x86_64-w64-mingw32-windres'
+#pkgconfig = '@CMAKE_INSTALL_PREFIX@/bin/@TARGET_ARCH@-pkgconf'
+#dlltool = '@CMAKE_INSTALL_PREFIX@/bin/@TARGET_ARCH@-dlltool'
+#nasm = 'nasm'
+#exe_wrapper = 'wine'
+
+[built-in options]
+c_link_args = ['-fuse-ld=lld']
+cpp_link_args = ['-fuse-ld=lld']
+
+[host_machine]
+system = 'windows'
+cpu_family = '$TARGET_CPU_FAMILY'
+cpu = '$TARGET_ARCH'
+endian = 'little'
+EOF
+}
+
+generate_cmake_toolchain_file() {
+    cat <<EOF > toolchain.cmake
+SET(CMAKE_SYSTEM_NAME Windows)
+SET(CMAKE_SYSTEM_PROCESSOR $TARGET_CPU_FAMILY)
+
+# Skip linker test to avoid libgcc requirement during compiler detection
+SET(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+SET(CMAKE_C_COMPILER clang)
+SET(CMAKE_CXX_COMPILER clang++)
+SET(CMAKE_C_COMPILER_TARGET $TARGET_ARCH)
+SET(CMAKE_CXX_COMPILER_TARGET $TARGET_ARCH)
+SET(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)
+SET(CMAKE_ASM_COMPILER clang)
+
+SET(CMAKE_C_FLAGS_INIT "--target=$TARGET_ARCH")
+SET(CMAKE_CXX_FLAGS_INIT "--target=$TARGET_ARCH")
+SET(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib")
+SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib")
+SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib")
+
+SET(CMAKE_FIND_ROOT_PATH $OUTPUT_BASE /usr/$TARGET_ARCH)
+SET(CMAKE_INSTALL_PREFIX $OUTPUT_BASE)
+
+SET(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+SET(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+SET(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+EOF
+}
+
+generate_cross_env() {
+    cat <<EOF > cross.env
+CC="clang --target=$TARGET_ARCH"
+AR=llvm-ar
+RANLIB=llvm-ranlib
+PREFIX=$OUTPUT_BASE
+EOF
+}
