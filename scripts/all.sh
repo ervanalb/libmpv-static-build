@@ -12,22 +12,59 @@ ALL_SCRIPTS=(
     expat.sh
     openssl.sh
     libarchive.sh
+    angle-headers.sh
+    amf-headers.sh
+    nvcodec_headers.sh
+    libiconv.sh
+    lame.sh
+    libjpeg.sh
+    lcms2.sh
+    libpng.sh
+    libunibreaki.sh
+    freetype2.sh
+    harfbuzz.sh
+    fribidi.sh
+    fontconfig.sh
+    libass.sh
+    libudfread.sh
+    libxml2.sh
+    libbluray.sh
+    libsoxr.sh
+    libmodplug.sh
+    libbs2b.sh
+    libvpx.sh
+    libwebp.sh
+    graphengine.sh
+    libzimg.sh
+    libmysofa.sh
+    opus.sh
+    ogg.sh
+    speex.sh
+    vorbis.sh
+    libvpl.sh
+    vulkan-headers.sh
+    vulkan.sh
+    libsdl3.sh
+    libopenmpt.sh
+    highway.sh
+    libjxl.sh
+    glslang.sh
+    spirv-headers.sh
+    spirv-tools.sh
+    shaderc.sh
+    spirv-cross.sh
+    xxhash.sh
+    libplacebo.sh
 
-          harfbuzz.sh
-          fribidi.sh
-              libpng.sh
-            freetype2.sh
-          #fontconfig
-          libunibreaki.sh
-          libiconv.sh
-        #libass
-          libjpeg.sh
-        lcms2.sh
-        lame.sh
-        nvcodec_headers.sh
-        amf-headers.sh
       #ffmpeg
-      angle-headers.sh
+        #libaribcaption
+        #aom
+        #svtav1
+        #dav1d
+        #vapoursynth
+        #${ffmpeg_uavs3d}
+        #libva
+        #openal-soft
     #mpv.sh
 )
 

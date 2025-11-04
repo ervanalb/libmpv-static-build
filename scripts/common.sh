@@ -5,6 +5,7 @@ DOWNLOADS_BASE="${BASE}/downloads"
 WORK_BASE="${BASE}/work"
 OUTPUT_BASE="${BASE}/output"
 FETCH_BASE="${BASE}/fetch"
+PATCH_BASE="${BASE}/patches"
 
 export PKG_CONFIG_SYSROOT_DIR="$OUTPUT_BASE"
 
@@ -121,9 +122,9 @@ SET(CMAKE_ASM_COMPILER clang)
 
 SET(CMAKE_C_FLAGS_INIT "--target=$TARGET_ARCH")
 SET(CMAKE_CXX_FLAGS_INIT "--target=$TARGET_ARCH")
-SET(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib")
-SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib")
-SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib")
+SET(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
+SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
+SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
 
 SET(CMAKE_FIND_ROOT_PATH $OUTPUT_BASE /usr/$TARGET_ARCH)
 SET(CMAKE_INSTALL_PREFIX $OUTPUT_BASE)
@@ -136,10 +137,12 @@ EOF
 
 generate_cross_env() {
     cat <<EOF > cross.env
-CC="clang --target=$TARGET_ARCH"
-CXX="clang++ --target=$TARGET_ARCH"
-AR=llvm-ar
-RANLIB=llvm-ranlib
-PREFIX=$OUTPUT_BASE
+export CC="clang --target=$TARGET_ARCH"
+export CXX="clang++ --target=$TARGET_ARCH"
+export AR=llvm-ar
+export RANLIB=llvm-ranlib
+export PREFIX=$OUTPUT_BASE
+export PKG_CONFIG_PATH=$OUTPUT_BASE/lib/pkgconfig
+export PKG_CONFIG_LIBDIR=$OUTPUT_BASE/lib/pkgconfig
 EOF
 }

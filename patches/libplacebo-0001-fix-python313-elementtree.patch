@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Build Script <build@localhost>
+Date: Mon, 4 Nov 2025 17:40:00 +0000
+Subject: [PATCH] Fix Python 3.13 ElementTree compatibility
+
+In Python 3.13, ET.ElementTree.__init__() expects an Element,
+not an ElementTree. Use .getroot() to extract the root element.
+---
+ src/vulkan/utils_gen.py | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/src/vulkan/utils_gen.py b/src/vulkan/utils_gen.py
+index 1111111..2222222 100644
+--- a/src/vulkan/utils_gen.py
++++ b/src/vulkan/utils_gen.py
+@@ -202,7 +202,7 @@ if __name__ == '__main__':
+     if not xmlfile or xmlfile == '':
+         xmlfile = find_registry_xml(datadir)
+
+-    registry = VkXML(ET.parse(xmlfile))
++    registry = VkXML(ET.parse(xmlfile).getroot())
+     with open(outfile, 'w') as f:
+         f.write(TEMPLATE.render(
+             vkresults = get_vkenum(registry, 'VkResult'),
+--
+2.45.0
