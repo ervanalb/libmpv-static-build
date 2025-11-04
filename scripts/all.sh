@@ -12,6 +12,23 @@ ALL_SCRIPTS=(
     expat.sh
     openssl.sh
     libarchive.sh
+
+          harfbuzz.sh
+          fribidi.sh
+              libpng.sh
+            freetype2.sh
+          #fontconfig
+          libunibreaki.sh
+          libiconv.sh
+        #libass
+          libjpeg.sh
+        lcms2.sh
+        lame.sh
+        nvcodec_headers.sh
+        amf-headers.sh
+      #ffmpeg
+      angle-headers.sh
+    #mpv.sh
 )
 
 download() {

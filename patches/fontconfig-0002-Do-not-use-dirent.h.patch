@@ -1,0 +1,10 @@
+--- fontconfig-2.15.0.orig/meson.build	2025-11-04 11:00:21.773474451 -0500
++++ fontconfig-2.15.0/meson.build	2025-11-04 11:12:27.325739211 -0500
+@@ -47,7 +47,6 @@
+ python3 = import('python').find_installation()
+ 
+ check_headers = [
+-  ['dirent.h'],
+   ['fcntl.h'],
+   ['stdlib.h'],
+   ['string.h'],

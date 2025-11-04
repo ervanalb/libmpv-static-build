@@ -4,11 +4,13 @@ BASE="$(cd "$(dirname "$0")/.." && pwd)"
 DOWNLOADS_BASE="${BASE}/downloads"
 WORK_BASE="${BASE}/work"
 OUTPUT_BASE="${BASE}/output"
+FETCH_BASE="${BASE}/fetch"
 
 export PKG_CONFIG_SYSROOT_DIR="$OUTPUT_BASE"
 
 SOURCE_ARCHIVE="$PKGNAME-$PKGVER.tar.gz"
 WORK="$WORK_BASE/$PKGNAME-$PKGVER"
+FETCH="$FETCH_BASE/$PKGNAME-$PKGVER"
 
 run() {
     ACTION="${1:-}"
@@ -33,7 +35,22 @@ fetch_url() {
 
     mkdir -p "$DOWNLOADS_BASE"
     wget -q "$1" -O "$DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified"
+    verify
+}
 
+fetch_git() {
+    URL="$1"
+    GIT_CLONE_FLAGS="${GIT_CLONE_FLAGS:-}"
+
+    rm -rf "$FETCH"
+    git clone -q "$URL" "$FETCH" $GIT_CLONE_FLAGS
+}
+
+create_tarball() {
+    tar -zcf "$DOWNLOADS_BASE/$SOURCE_ARCHIVE" --exclude .git --transform="s,^,$PKGNAME-$PKGVER/," .
+}
+
+verify() {
     echo "$SOURCE_ARCHIVE_SHA256 $DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified" | sha256sum --check --status \
         || { echo "Error: checksum failed for $SOURCE_ARCHIVE" >&2; exit 1; }
     mv "$DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified" "$DOWNLOADS_BASE/$SOURCE_ARCHIVE"
@@ -49,6 +66,11 @@ setup_output() {
     mkdir -p "${OUTPUT_BASE}"
 }
 
+meson_ninja_remove_invalid_linker_args() {
+    BUILDDIR="${1:-.}"
+    sed -i 's/-Wl,--allow-shlib-undefined//g' "$BUILDDIR/build.ninja"
+}
+
 TARGET_CPU_FAMILY="x86_64"
 TARGET_ARCH="x86_64-w64-mingw32"
 
@@ -60,8 +82,8 @@ cpp = ['clang++', '--target=$TARGET_ARCH']
 ar = 'llvm-ar'
 ranlib = 'llvm-ranlib'
 strip = 'llvm-strip'
-#windres = 'x86_64-w64-mingw32-windres'
-#pkgconfig = '@CMAKE_INSTALL_PREFIX@/bin/@TARGET_ARCH@-pkgconf'
+windres = 'x86_64-w64-mingw32-windres'
+pkgconfig = 'pkg-config'
 #dlltool = '@CMAKE_INSTALL_PREFIX@/bin/@TARGET_ARCH@-dlltool'
 #nasm = 'nasm'
 #exe_wrapper = 'wine'
@@ -69,6 +91,10 @@ strip = 'llvm-strip'
 [built-in options]
 c_link_args = ['-fuse-ld=lld']
 cpp_link_args = ['-fuse-ld=lld']
+
+[properties]
+pkg_config_libdir = '$OUTPUT_BASE/lib/pkgconfig'
+pkg_config_path = '$OUTPUT_BASE/lib/pkgconfig'
 
 [host_machine]
 system = 'windows'
@@ -111,6 +137,7 @@ EOF
 generate_cross_env() {
     cat <<EOF > cross.env
 CC="clang --target=$TARGET_ARCH"
+CXX="clang++ --target=$TARGET_ARCH"
 AR=llvm-ar
 RANLIB=llvm-ranlib
 PREFIX=$OUTPUT_BASE

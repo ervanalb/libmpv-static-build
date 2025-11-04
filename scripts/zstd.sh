@@ -32,9 +32,9 @@ build() {
         -Dlzma=disabled \
         -Dlz4=disabled
 
-    cd builddir
-    ninja
-    ninja install
+    meson_ninja_remove_invalid_linker_args builddir
+    ninja -C builddir
+    ninja -C builddir install
 }
 
 run "$@"
