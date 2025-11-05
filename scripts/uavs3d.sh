@@ -11,7 +11,7 @@ download() {
     fetch_git "https://github.com/uavs3/uavs3d.git"
 
     cd "$FETCH"
-    git checkout ${PKGVER}
+    git checkout -q ${PKGVER}
 
     # Generate version.h using the provided script
     bash version.sh

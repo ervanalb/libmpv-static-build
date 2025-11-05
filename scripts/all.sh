@@ -14,13 +14,12 @@ ALL_SCRIPTS=(
     libarchive.sh
     angle-headers.sh
     amf-headers.sh
-    nvcodec_headers.sh
     libiconv.sh
     lame.sh
     libjpeg.sh
     lcms2.sh
     libpng.sh
-    libunibreaki.sh
+    libunibreak.sh
     freetype2.sh
     harfbuzz.sh
     fribidi.sh
