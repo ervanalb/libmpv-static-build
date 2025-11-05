@@ -34,7 +34,6 @@ ALL_SCRIPTS=(
     libbs2b.sh
     libvpx.sh
     libwebp.sh
-    graphengine.sh
     libzimg.sh
     libmysofa.sh
     opus.sh
@@ -55,16 +54,16 @@ ALL_SCRIPTS=(
     spirv-cross.sh
     xxhash.sh
     libplacebo.sh
+    libaribcaption.sh
+    aom.sh
+    svtav1.sh
+    dav1d.sh
+    uavs3d.sh
+    libva.sh
+    openal-soft.sh
+    vapoursynth.sh 
+    ffmpeg.sh
 
-      #ffmpeg
-        #libaribcaption
-        #aom
-        #svtav1
-        #dav1d
-        #vapoursynth
-        #${ffmpeg_uavs3d}
-        #libva
-        #openal-soft
     #mpv.sh
 )
 

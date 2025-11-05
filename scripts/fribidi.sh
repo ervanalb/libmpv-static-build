@@ -7,7 +7,6 @@ SOURCE_ARCHIVE_SHA256="1b1cde5b235d40479e91be2f0e88a309e3214c8ab470ec8a2744d82a5
 
 source "$(dirname "$0")/common.sh"
 
-# Override SOURCE_ARCHIVE for .tar.xz
 SOURCE_ARCHIVE="$PKGNAME-$PKGVER.tar.xz"
 
 download() {

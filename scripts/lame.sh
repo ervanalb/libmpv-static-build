@@ -38,6 +38,21 @@ build() {
 
     make -j$(nproc)
     make install
+
+    # Create lame.pc file
+    # (not sure why this isn't installed)
+    cat > "${OUTPUT_BASE}/lib/pkgconfig/lame.pc" <<EOF
+prefix=${OUTPUT_BASE}
+exec_prefix=\${prefix}
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
+
+Name: lame
+Description: high quality MPEG Audio Layer III (MP3) encoder library
+Version: 3.100
+Libs: -L\${libdir} -lmp3lame
+Cflags: -I\${includedir}/lame
+EOF
 }
 
 run "$@"

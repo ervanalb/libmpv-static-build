@@ -30,6 +30,22 @@ build() {
 
     make
     make install
+
+    # Write corrected libmodplug.pc file with MODPLUG_STATIC define
+    cat > "${OUTPUT_BASE}/lib/pkgconfig/libmodplug.pc" <<EOF
+prefix=${OUTPUT_BASE}
+exec_prefix=\${prefix}
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
+
+Name: libmodplug
+Description: The ModPlug mod file playing library.
+Version: ${PKGVER}
+Libs: -L\${libdir} -lmodplug
+Libs.private: -lstdc++ -lm
+Cflags: -I\${includedir}
+Cflags.private: -DMODPLUG_STATIC
+EOF
 }
 
 run "$@"

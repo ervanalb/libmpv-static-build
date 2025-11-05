@@ -84,7 +84,7 @@ ar = 'llvm-ar'
 ranlib = 'llvm-ranlib'
 strip = 'llvm-strip'
 windres = 'x86_64-w64-mingw32-windres'
-pkgconfig = 'pkg-config'
+pkg-config = 'pkg-config'
 #dlltool = '@CMAKE_INSTALL_PREFIX@/bin/@TARGET_ARCH@-dlltool'
 #nasm = 'nasm'
 #exe_wrapper = 'wine'
@@ -122,9 +122,9 @@ SET(CMAKE_ASM_COMPILER clang)
 
 SET(CMAKE_C_FLAGS_INIT "--target=$TARGET_ARCH")
 SET(CMAKE_CXX_FLAGS_INIT "--target=$TARGET_ARCH")
-SET(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
-SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
-SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
+SET(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib")
+SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib")
+SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib")
 
 SET(CMAKE_FIND_ROOT_PATH $OUTPUT_BASE /usr/$TARGET_ARCH)
 SET(CMAKE_INSTALL_PREFIX $OUTPUT_BASE)
@@ -139,6 +139,7 @@ generate_cross_env() {
     cat <<EOF > cross.env
 export CC="clang --target=$TARGET_ARCH"
 export CXX="clang++ --target=$TARGET_ARCH"
+export LD="clang --target=$TARGET_ARCH -fuse-ld=lld -L$OUTPUT_BASE/lib -L/usr/$TARGET_ARCH/lib"
 export AR=llvm-ar
 export RANLIB=llvm-ranlib
 export PREFIX=$OUTPUT_BASE

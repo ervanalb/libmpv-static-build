@@ -38,6 +38,20 @@ build() {
     meson_ninja_remove_invalid_linker_args builddir
     ninja -C builddir
     ninja -C builddir install
+
+    # Write corrected libass.pc file
+    cat > "${OUTPUT_BASE}/lib/pkgconfig/libass.pc" <<EOF
+prefix=${OUTPUT_BASE}
+includedir=\${prefix}/include
+libdir=\${prefix}/lib
+
+Name: libass
+Description: libass is an SSA/ASS subtitles rendering library
+Version: ${PKGVER}
+Requires: freetype2 >=  9.17.3, fribidi >=  0.19.1, harfbuzz >=  1.2.3, libunibreak >=  1.1, fontconfig >=  2.10.92
+Libs: -L\${libdir} -lass -lgdi32
+Cflags: -I\${includedir}
+EOF
 }
 
 run "$@"

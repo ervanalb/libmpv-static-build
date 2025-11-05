@@ -78,6 +78,32 @@ build() {
 
     ninja -C build
     ninja -C build install
+
+    # Write corrected libplacebo.pc file
+    cat > "${OUTPUT_BASE}/lib/pkgconfig/libplacebo.pc" <<EOF
+prefix=${OUTPUT_BASE}
+includedir=\${prefix}/include
+libdir=\${prefix}/lib
+
+pl_has_d3d11=1
+pl_has_dovi=1
+pl_has_gl_proc_addr=1
+pl_has_glslang=0
+pl_has_lcms=1
+pl_has_libdovi=0
+pl_has_opengl=1
+pl_has_shaderc=1
+pl_has_vk_proc_addr=1
+pl_has_vulkan=1
+pl_has_xxhash=1
+
+Name: libplacebo
+Description: Reusable library for GPU-accelerated video/image rendering
+Version: ${PKGVER}
+Requires: shaderc >= 2019.1, spirv-cross-c-shared >= 0.29.0, vulkan, lcms2 >= 2.9
+Libs: -L\${libdir} -lplacebo -lshlwapi -lversion
+Cflags: -I\${includedir} -DPL_STATIC
+EOF
 }
 
 run "$@"
