@@ -63,7 +63,9 @@ ALL_SCRIPTS=(
     openal-soft.sh
     vapoursynth.sh 
     ffmpeg.sh
-
+    lua.sh
+    uchardet.sh
+    mujs.sh
     #mpv.sh
 )
 

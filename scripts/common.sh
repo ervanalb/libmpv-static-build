@@ -72,6 +72,11 @@ meson_ninja_remove_invalid_linker_args() {
     sed -i 's/-Wl,--allow-shlib-undefined//g' "$BUILDDIR/build.ninja"
 }
 
+patch_meson_iconv_dependency() {
+    # Patch meson.build to use iconv_ instead of iconv to avoid built-in detection
+    sed -i "s/dependency('iconv'/dependency('iconv_'/g" meson.build
+}
+
 TARGET_CPU_FAMILY="x86_64"
 TARGET_ARCH="x86_64-w64-mingw32"
 
@@ -90,8 +95,10 @@ pkg-config = 'pkg-config'
 #exe_wrapper = 'wine'
 
 [built-in options]
-c_link_args = ['-fuse-ld=lld']
-cpp_link_args = ['-fuse-ld=lld']
+c_args = ['-I$OUTPUT_BASE/include']
+cpp_args = ['-I$OUTPUT_BASE/include']
+c_link_args = ['-fuse-ld=lld', '-L$OUTPUT_BASE/lib']
+cpp_link_args = ['-fuse-ld=lld', '-L$OUTPUT_BASE/lib']
 
 [properties]
 pkg_config_libdir = '$OUTPUT_BASE/lib/pkgconfig'

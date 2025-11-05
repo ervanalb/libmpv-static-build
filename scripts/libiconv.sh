@@ -30,6 +30,20 @@ build() {
 
     make -j$(nproc)
     make install
+
+    # Create pkg-config file with underscore to avoid Meson's built-in detection
+    cat > "${OUTPUT_BASE}/lib/pkgconfig/iconv_.pc" <<EOF
+prefix=${OUTPUT_BASE}
+exec_prefix=\${prefix}
+libdir=\${prefix}/lib
+includedir=\${prefix}/include
+
+Name: iconv
+Description: Character set conversion library
+Version: ${PKGVER}
+Libs: -L\${libdir} -liconv
+Cflags: -I\${includedir}
+EOF
 }
 
 run "$@"
