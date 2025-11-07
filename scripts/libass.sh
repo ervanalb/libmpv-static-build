@@ -27,7 +27,6 @@ build() {
         --default-library=static \
         -Dfontconfig=enabled \
         -Ddirectwrite=enabled \
-        -Dasm=enabled \
         -Dlibunibreak=enabled \
         -Dtest=disabled \
         -Dcompare=disabled \

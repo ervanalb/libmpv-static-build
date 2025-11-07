@@ -35,14 +35,16 @@ fetch_url() {
     URL="$1"
 
     mkdir -p "$DOWNLOADS_BASE"
-    wget -q "$1" -O "$DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified"
-    verify
+
+    if ! already_downloaded; then
+        wget -q "$1" -O "$DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified"
+        verify
+    fi
 }
 
 fetch_git() {
     URL="$1"
     GIT_CLONE_FLAGS="${GIT_CLONE_FLAGS:-}"
-
     rm -rf "$FETCH"
     git clone -q "$URL" "$FETCH" $GIT_CLONE_FLAGS
 }
@@ -55,6 +57,17 @@ verify() {
     echo "$SOURCE_ARCHIVE_SHA256 $DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified" | sha256sum --check --status \
         || { echo "Error: checksum failed for $SOURCE_ARCHIVE" >&2; exit 1; }
     mv "$DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified" "$DOWNLOADS_BASE/$SOURCE_ARCHIVE"
+}
+
+already_downloaded() {
+    echo "$SOURCE_ARCHIVE_SHA256 $DOWNLOADS_BASE/$SOURCE_ARCHIVE" | sha256sum --check --status
+    RC=$?
+    if [ $RC -eq 0 ]; then
+        echo "$PKGNAME already downloaded"
+    else
+        rm -f "$SOURCE_ARCHIVE_SHA256 $DOWNLOADS_BASE/$SOURCE_ARCHIVE"
+    fi
+    return $RC
 }
 
 extract() {

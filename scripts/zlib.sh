@@ -27,6 +27,7 @@ build() {
         -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake \
         -DCMAKE_INSTALL_PREFIX=${OUTPUT_BASE} \
         -DCMAKE_FIND_ROOT_PATH=${OUTPUT_BASE} \
+        -DINSTALL_PKGCONFIG_DIR=${OUTPUT_BASE}/lib/pkgconfig \
         -DBUILD_SHARED_LIBS=OFF \
         -DZLIB_BUILD_EXAMPLES=OFF
 
