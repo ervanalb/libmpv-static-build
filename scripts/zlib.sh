@@ -33,6 +33,9 @@ build() {
 
     ninja
     ninja install
+
+    # Rename libzlibstatic.a to libz.a so linker can find it with -lz
+    mv "${OUTPUT_BASE}/lib/libzlibstatic.a" "${OUTPUT_BASE}/lib/libz.a"
 }
 
 run "$@"

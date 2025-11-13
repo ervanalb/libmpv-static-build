@@ -39,6 +39,9 @@ build() {
     make
     make install
 
+    # Rename .lib to .a for compatibility with lld linker
+    mv "${OUTPUT_BASE}/lib/libmp3lame.lib" "${OUTPUT_BASE}/lib/libmp3lame.a"
+
     # Create lame.pc file
     # (not sure why this isn't installed)
     cat > "${OUTPUT_BASE}/lib/pkgconfig/lame.pc" <<EOF

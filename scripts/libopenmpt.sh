@@ -34,6 +34,9 @@ build() {
 
     make
     make install
+
+    # Rename .lib to .a for compatibility with lld linker
+    mv "${OUTPUT_BASE}/lib/libopenmpt.lib" "${OUTPUT_BASE}/lib/libopenmpt.a"
 }
 
 run "$@"
