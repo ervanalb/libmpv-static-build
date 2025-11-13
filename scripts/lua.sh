@@ -22,7 +22,7 @@ build() {
 
     # Build static library only (no executables needed)
     cd src
-    make -j$(nproc) \
+    make \
         CC="$CC" \
         AR="$AR rcu" \
         RANLIB="$RANLIB" \

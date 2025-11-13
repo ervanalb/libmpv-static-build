@@ -28,7 +28,7 @@ build() {
         --disable-shared \
         --enable-extra-encodings
 
-    make -j$(nproc)
+    make
     make install
 
     # Create pkg-config file with underscore to avoid Meson's built-in detection

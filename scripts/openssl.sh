@@ -72,7 +72,7 @@ build() {
         zlib \
         -L${OUTPUT_BASE}/lib
 
-    make -j$(nproc) build_sw
+    make build_sw
     make install_sw
 }
 

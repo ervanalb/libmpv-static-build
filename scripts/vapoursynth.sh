@@ -31,7 +31,7 @@ build() {
         --disable-vspipe \
         --disable-vsscript
 
-    make -j$(nproc)
+    make
     make install
 }
 

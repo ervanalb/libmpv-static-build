@@ -36,7 +36,7 @@ build() {
         --disable-shared \
         --disable-frontend
 
-    make -j$(nproc)
+    make
     make install
 
     # Create lame.pc file

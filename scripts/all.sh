@@ -65,7 +65,7 @@ ALL_SCRIPTS=(
     lua.sh
     uchardet.sh
     mujs.sh
-    #mpv.sh
+    mpv.sh
 )
 
 download() {

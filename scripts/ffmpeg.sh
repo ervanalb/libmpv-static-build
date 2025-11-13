@@ -80,7 +80,7 @@ build() {
         --extra-ldflags='-static-libgcc -static-libstdc++ -Wl,--allow-multiple-definition' \
         --extra-libs='-lwinmm -lavrt -latomic -lole32 -lshell32 -luuid -lstdc++ -pthread'
 
-    make -j$(nproc)
+    make
     make install
 }
 

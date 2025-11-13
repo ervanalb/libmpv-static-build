@@ -60,7 +60,7 @@ verify() {
 }
 
 already_downloaded() {
-    echo "$SOURCE_ARCHIVE_SHA256 $DOWNLOADS_BASE/$SOURCE_ARCHIVE" | sha256sum --check --status
+    echo "$SOURCE_ARCHIVE_SHA256 $DOWNLOADS_BASE/$SOURCE_ARCHIVE" | sha256sum --check --status 2>/dev/null
     RC=$?
     if [ $RC -eq 0 ]; then
         echo "$PKGNAME already downloaded"
@@ -93,7 +93,6 @@ patch_meson_iconv_dependency() {
 TARGET_CPU_FAMILY="x86_64"
 TARGET_ARCH="x86_64-w64-mingw32"
 
-# Dynamically discover GCC paths
 GCC_LIBDIR="$($TARGET_ARCH-g++ -print-file-name=libgcc.a | xargs dirname)"
 GCC_INCLUDE_CXX="$GCC_LIBDIR/include/c++"
 GCC_INCLUDE_CXX_TARGET="$GCC_LIBDIR/include/c++/$TARGET_ARCH"
@@ -115,9 +114,9 @@ pkg-config = 'pkg-config'
 
 [built-in options]
 c_args = ['-I$OUTPUT_BASE/include']
-cpp_args = ['-I$OUTPUT_BASE/include', '-I$GCC_INCLUDE_CXX', '-I$GCC_INCLUDE_CXX_TARGET', '-I$GCC_INCLUDE_CXX_BACKWARD']
-c_link_args = ['-fuse-ld=lld', '-L$GCC_LIBDIR', '-L/usr/$TARGET_ARCH/lib', '-L$OUTPUT_BASE/lib']
-cpp_link_args = ['-fuse-ld=lld', '-L$GCC_LIBDIR', '-L/usr/$TARGET_ARCH/lib', '-L$OUTPUT_BASE/lib']
+cpp_args = ['-isystem', '$GCC_INCLUDE_CXX', '-isystem', '$GCC_INCLUDE_CXX_TARGET', '-isystem', '$GCC_INCLUDE_CXX_BACKWARD', '-I$OUTPUT_BASE/include']
+c_link_args = ['-fuse-ld=lld', '-L$OUTPUT_BASE/lib']
+cpp_link_args = ['-fuse-ld=lld', '-L$OUTPUT_BASE/lib']
 
 [properties]
 pkg_config_libdir = '$OUTPUT_BASE/lib/pkgconfig'
@@ -146,11 +145,14 @@ SET(CMAKE_CXX_COMPILER_TARGET $TARGET_ARCH)
 SET(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)
 SET(CMAKE_ASM_COMPILER clang)
 
-SET(CMAKE_C_FLAGS_INIT "--target=$TARGET_ARCH")
-SET(CMAKE_CXX_FLAGS_INIT "--target=$TARGET_ARCH -I$GCC_INCLUDE_CXX -I$GCC_INCLUDE_CXX_TARGET -I$GCC_INCLUDE_CXX_BACKWARD")
-SET(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld -L$GCC_LIBDIR -L/usr/$TARGET_ARCH/lib -pthread")
-SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld -L$GCC_LIBDIR -L/usr/$TARGET_ARCH/lib -pthread")
-SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=lld -L$GCC_LIBDIR -L/usr/$TARGET_ARCH/lib -pthread")
+SET(CMAKE_C_FLAGS_INIT "--target=$TARGET_ARCH \
+-isystem $GCC_INCLUDE_CXX \
+-isystem $GCC_INCLUDE_CXX_TARGET \
+-isystem $GCC_INCLUDE_CXX_BACKWARD")
+SET(CMAKE_CXX_FLAGS_INIT "--target=$TARGET_ARCH ")
+SET(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
+SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
+SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
 
 SET(CMAKE_FIND_ROOT_PATH $OUTPUT_BASE /usr/$TARGET_ARCH)
 SET(CMAKE_INSTALL_PREFIX $OUTPUT_BASE)
@@ -163,12 +165,16 @@ EOF
 
 generate_cross_env() {
     cat <<EOF > cross.env
+export MAKEFLAGS="-j $(nproc)"
 export CC="clang --target=$TARGET_ARCH"
 export CXX="clang++ --target=$TARGET_ARCH"
 export LD="clang --target=$TARGET_ARCH -fuse-ld=lld -L$OUTPUT_BASE/lib -L/usr/$TARGET_ARCH/lib"
-export LDFLAGS="-fuse-ld=lld -L$GCC_LIBDIR -L/usr/$TARGET_ARCH/lib -L$OUTPUT_BASE/lib"
-export CFLAGS="-I$OUTPUT_BASE/include"
-export CXXFLAGS="-I$OUTPUT_BASE/include -I$GCC_INCLUDE_CXX -I$GCC_INCLUDE_CXX_TARGET -I$GCC_INCLUDE_CXX_BACKWARD"
+export CFLAGS="-pthread"
+export CXXFLAGS="-pthread \
+-isystem $GCC_INCLUDE_CXX \
+-isystem $GCC_INCLUDE_CXX_TARGET \
+-isystem $GCC_INCLUDE_CXX_BACKWARD"
+export LDFLAGS="-pthread"
 export AR=llvm-ar
 export RANLIB=llvm-ranlib
 export PREFIX=$OUTPUT_BASE
