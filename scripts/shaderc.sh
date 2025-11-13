@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+set -x
 
 PKGNAME="shaderc"
 PKGVER="2025.4"
@@ -21,9 +22,9 @@ build() {
     mkdir -p third_party
 
     # Symlink glslang, spirv-headers, and spirv-tools
-    ln -sf /home/eric/libmpv-static-build/work/glslang-16.0.0 third_party/glslang
-    ln -sf /home/eric/libmpv-static-build/work/SPIRV-Headers-vulkan-sdk-1.4.328.1 third_party/spirv-headers
-    ln -sf /home/eric/libmpv-static-build/work/SPIRV-Tools-2025.4 third_party/spirv-tools
+    ln -sf $WORK_BASE/glslang-* third_party/glslang
+    ln -sf $WORK_BASE/spirv-headers-* third_party/spirv-headers
+    ln -sf $WORK_BASE/spirv-tools-* third_party/spirv-tools
 
     generate_cmake_toolchain_file
 
@@ -38,7 +39,6 @@ build() {
         -DCMAKE_FIND_ROOT_PATH=${OUTPUT_BASE} \
         -DBUILD_SHARED_LIBS=OFF \
         -DSHADERC_SKIP_TESTS=ON \
-        -DSHADERC_SKIP_SPVC=ON \
         -DSHADERC_SKIP_EXAMPLES=ON \
         -DSPIRV_SKIP_EXECUTABLES=ON \
         -DSPIRV_SKIP_TESTS=ON \

@@ -30,7 +30,6 @@ build() {
         -DCMAKE_FIND_ROOT_PATH=${OUTPUT_BASE} \
         -DBUILD_SHARED_LIBS=OFF \
         -DENABLE_OPT=OFF \
-        -DBUILD_TESTING=OFF \
         -DENABLE_GLSLANG_BINARIES=OFF
 
     ninja

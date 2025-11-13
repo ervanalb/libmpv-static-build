@@ -1,14 +1,14 @@
 #!/bin/bash
 set -euo pipefail
 
-PKGNAME="SPIRV-Headers"
-PKGVER="vulkan-sdk-1.4.328.1"
+PKGNAME="spirv-headers"
+PKGVER="1.4.328.1"
 SOURCE_ARCHIVE_SHA256="602364ab7bf404a7f352df7da5c645f1c4558a9c92616f8ee33422b04d5e35b7"
 
 source "$(dirname "$0")/common.sh"
 
 download() {
-    fetch_url "https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/${PKGVER}.tar.gz"
+    fetch_url "https://github.com/KhronosGroup/SPIRV-Headers/archive/refs/tags/vulkan-sdk-${PKGVER}.tar.gz"
 }
 
 build() {
