@@ -64,21 +64,6 @@ build() {
     install -p -m 0644 include/mpv/stream_cb.h "${OUTPUT_BASE}/include/mpv/"
     install -p -m 0644 include/mpv/render.h "${OUTPUT_BASE}/include/mpv/"
     install -p -m 0644 include/mpv/render_gl.h "${OUTPUT_BASE}/include/mpv/"
-
-    # Create pkg-config file for libmpv
-    cat > "${OUTPUT_BASE}/lib/pkgconfig/mpv.pc" <<EOF
-prefix=${OUTPUT_BASE}
-exec_prefix=\${prefix}
-libdir=\${prefix}/lib
-includedir=\${prefix}/include
-
-Name: mpv
-Description: mpv media player client library
-Version: ${PKGVER}
-Requires:
-Libs: -L\${libdir} -lmpv
-Cflags: -I\${includedir}
-EOF
 }
 
 run "$@"
