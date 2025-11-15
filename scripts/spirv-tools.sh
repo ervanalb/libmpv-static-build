@@ -38,6 +38,10 @@ build() {
     ninja SPIRV-Tools-static SPIRV-Tools-opt SPIRV-Tools-link SPIRV-Tools-reduce SPIRV-Tools-lint SPIRV-Tools-diff
     # Install libraries only
     ninja install
+
+    # Remove dynamic libs if they were built
+    rm -f "${OUTPUT_BASE}/lib/libSPIRV-Tools-shared.dll.a"
+    rm -f "${OUTPUT_BASE}/bin/libSPIRV-Tools-shared.dll"
 }
 
 run "$@"
