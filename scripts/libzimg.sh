@@ -60,6 +60,10 @@ build() {
 
     # Rename .lib to .a for compatibility with lld linker
     mv "${OUTPUT_BASE}/lib/libzimg.lib" "${OUTPUT_BASE}/lib/libzimg.a"
+
+    # Localize conflicting math wrapper symbols to avoid duplicate symbol errors with mingw
+    # These wrapper functions conflict with mingw's libmingwex.a implementations
+    x86_64-w64-mingw32-objcopy --localize-symbol=expf --localize-symbol=powf "${OUTPUT_BASE}/lib/libzimg.a"
 }
 
 run "$@"
