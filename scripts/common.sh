@@ -103,14 +103,11 @@ generate_meson_cross() {
 [binaries]
 c = ['clang', '--target=$TARGET_ARCH']
 cpp = ['clang++', '--target=$TARGET_ARCH']
-ar = 'llvm-ar'
-ranlib = 'llvm-ranlib'
-strip = 'llvm-strip'
+ar = 'x86_64-w64-mingw32-ar'
+ranlib = 'x86_64-w64-mingw32-ranlib'
+strip = 'x86_64-w64-mingw32-strip'
 windres = 'x86_64-w64-mingw32-windres'
 pkg-config = 'pkg-config'
-#dlltool = '@CMAKE_INSTALL_PREFIX@/bin/@TARGET_ARCH@-dlltool'
-#nasm = 'nasm'
-#exe_wrapper = 'wine'
 
 [built-in options]
 c_args = ['-I$OUTPUT_BASE/include']
@@ -178,8 +175,8 @@ export CXXFLAGS="-pthread \
 -isystem $GCC_INCLUDE_CXX_TARGET \
 -isystem $GCC_INCLUDE_CXX_BACKWARD"
 export LDFLAGS="-pthread"
-export AR=llvm-ar
-export RANLIB=llvm-ranlib
+export AR=x86_64-w64-mingw32-ar
+export RANLIB=x86_64-w64-mingw32-ranlib
 export PKG_CONFIG=pkg-config
 export PREFIX=$OUTPUT_BASE
 export PKG_CONFIG_PATH=$OUTPUT_BASE/lib/pkgconfig
