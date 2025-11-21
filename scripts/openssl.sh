@@ -20,10 +20,10 @@ build() {
     # Set up environment for cross-compilation with clang
     export CC="clang --target=$TARGET_ARCH"
     export CXX="clang++ --target=$TARGET_ARCH"
-    export AR="llvm-ar"
-    export RANLIB="llvm-ranlib"
+    export AR="x86_64-w64-mingw32-ar"
+    export RANLIB="x86_64-w64-mingw32-ranlib"
     export RC="x86_64-w64-mingw32-windres"
-    export LD="ld.lld"
+    export LD="x86_64-w64-mingw32-ld"
 
     ./Configure \
         --prefix=${OUTPUT_BASE} \
