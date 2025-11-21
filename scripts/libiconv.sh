@@ -8,7 +8,7 @@ SOURCE_ARCHIVE_SHA256="3b08f5f4f9b4eb82f151a7040bfd6fe6c6fb922efe4b1659c66ea9332
 source "$(dirname "$0")/common.sh"
 
 download() {
-    fetch_url "https://ftpmirror.gnu.org/libiconv/${SOURCE_ARCHIVE}"
+    fetch_url "https://mirrors.dotsrc.org/gnu/libiconv/${SOURCE_ARCHIVE}"
 }
 
 build() {
