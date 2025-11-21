@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euo pipefail
-set -x
 
 PKGNAME="shaderc"
 PKGVER="2025.4"

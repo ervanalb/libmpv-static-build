@@ -77,8 +77,8 @@ build() {
         --disable-vdpau \
         --disable-videotoolbox \
         --extra-cflags='-Wno-error=int-conversion -DAL_LIBTYPE_STATIC' \
-        --extra-ldflags='-static-libgcc -static-libstdc++ -Wl,--allow-multiple-definition' \
-        --extra-libs='-lwinmm -lavrt -latomic -lole32 -lshell32 -luuid -lstdc++ -pthread'
+        --extra-ldflags='-Wl,--allow-multiple-definition' \
+        --extra-libs='-lwinmm -lavrt -latomic -lole32 -lshell32 -luuid -lstdc++'
 
     make
     make install

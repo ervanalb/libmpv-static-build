@@ -115,8 +115,8 @@ pkg-config = 'pkg-config'
 [built-in options]
 c_args = ['-I$OUTPUT_BASE/include']
 cpp_args = ['-isystem', '$GCC_INCLUDE_CXX', '-isystem', '$GCC_INCLUDE_CXX_TARGET', '-isystem', '$GCC_INCLUDE_CXX_BACKWARD', '-I$OUTPUT_BASE/include']
-c_link_args = ['-fuse-ld=lld', '-L$OUTPUT_BASE/lib']
-cpp_link_args = ['-fuse-ld=lld', '-L$OUTPUT_BASE/lib']
+c_link_args = ['-L$OUTPUT_BASE/lib', '-pthread']
+cpp_link_args = ['-L$OUTPUT_BASE/lib', '-pthread']
 
 [properties]
 pkg_config_libdir = '$OUTPUT_BASE/lib/pkgconfig'
@@ -136,7 +136,7 @@ SET(CMAKE_SYSTEM_NAME Windows)
 SET(CMAKE_SYSTEM_PROCESSOR $TARGET_CPU_FAMILY)
 
 # Skip linker test to avoid libgcc requirement during compiler detection
-SET(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+#SET(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
 
 SET(CMAKE_C_COMPILER clang)
 SET(CMAKE_CXX_COMPILER clang++)
@@ -150,9 +150,9 @@ SET(CMAKE_C_FLAGS_INIT "--target=$TARGET_ARCH \
 -isystem $GCC_INCLUDE_CXX_TARGET \
 -isystem $GCC_INCLUDE_CXX_BACKWARD")
 SET(CMAKE_CXX_FLAGS_INIT "--target=$TARGET_ARCH ")
-SET(CMAKE_EXE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
-SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
-SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-fuse-ld=lld -L/usr/$TARGET_ARCH/lib -pthread")
+SET(CMAKE_EXE_LINKER_FLAGS_INIT "-L/usr/$TARGET_ARCH/lib -pthread")
+SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-L/usr/$TARGET_ARCH/lib -pthread")
+SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-L/usr/$TARGET_ARCH/lib -pthread")
 
 SET(CMAKE_FIND_ROOT_PATH $OUTPUT_BASE /usr/$TARGET_ARCH)
 SET(CMAKE_INSTALL_PREFIX $OUTPUT_BASE)
@@ -171,7 +171,7 @@ generate_cross_env() {
 export MAKEFLAGS="-j $(nproc)"
 export CC="clang --target=$TARGET_ARCH"
 export CXX="clang++ --target=$TARGET_ARCH"
-export LD="clang --target=$TARGET_ARCH -fuse-ld=lld -L$OUTPUT_BASE/lib -L/usr/$TARGET_ARCH/lib"
+export LD="clang --target=$TARGET_ARCH -L$OUTPUT_BASE/lib -L/usr/$TARGET_ARCH/lib"
 export CFLAGS="-pthread"
 export CXXFLAGS="-pthread \
 -isystem $GCC_INCLUDE_CXX \
@@ -180,6 +180,7 @@ export CXXFLAGS="-pthread \
 export LDFLAGS="-pthread"
 export AR=llvm-ar
 export RANLIB=llvm-ranlib
+export PKG_CONFIG=pkg-config
 export PREFIX=$OUTPUT_BASE
 export PKG_CONFIG_PATH=$OUTPUT_BASE/lib/pkgconfig
 export PKG_CONFIG_LIBDIR=$OUTPUT_BASE/lib/pkgconfig

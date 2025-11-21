@@ -14,7 +14,7 @@ download() {
     git checkout -q ${PKGVER}
 
     # Generate version.h using the provided script
-    bash version.sh
+    bash version.sh >/dev/null
 
     create_tarball
 }

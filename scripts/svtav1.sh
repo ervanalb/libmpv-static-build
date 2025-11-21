@@ -28,10 +28,12 @@ build() {
         -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake \
         -DCMAKE_INSTALL_PREFIX=${OUTPUT_BASE} \
         -DCMAKE_FIND_ROOT_PATH=${OUTPUT_BASE} \
+        -DCMAKE_C_FLAGS="-mavx2" \
+        -DENABLE_AVX512=OFF \
         -DBUILD_SHARED_LIBS=OFF \
         -DBUILD_TESTING=OFF \
         -DBUILD_APPS=OFF \
-        -DENABLE_NASM=OFF
+        -DSVT_AV1_LTO=OFF
 
     ninja
     ninja install

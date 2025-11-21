@@ -36,7 +36,7 @@ build() {
         -Ddebug=true \
         -Db_ndebug=false \
         -Doptimization=3 \
-        -Db_lto=true \
+        -Db_lto=false \
         -Dcplayer=false \
         -Dlibmpv=true \
         -Dpdf-build=disabled \
@@ -55,6 +55,7 @@ build() {
         -Dgl=enabled \
         -Degl-angle=enabled \
 
+    meson_ninja_remove_invalid_linker_args build
     ninja -C build
     ninja -C build install
 
