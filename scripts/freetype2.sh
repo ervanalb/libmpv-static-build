@@ -8,7 +8,7 @@ SOURCE_ARCHIVE_SHA256="174d9e53402e1bf9ec7277e22ec199ba3e55a6be2c0740cb18c0ee985
 source "$(dirname "$0")/common.sh"
 
 download() {
-    fetch_url "https://mirrors.dotsrc.org/gnu/freetype/freetype-${PKGVER}.tar.gz"
+    fetch_url "https://sourceforge.net/projects/freetype/files/freetype2/${PKGVER}/freetype-${PKGVER}.tar.gz/download"
 }
 
 build() {

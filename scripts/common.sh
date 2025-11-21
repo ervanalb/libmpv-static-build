@@ -37,7 +37,7 @@ fetch_url() {
     mkdir -p "$DOWNLOADS_BASE"
 
     if ! already_downloaded; then
-        wget -q "$1" -O "$DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified"
+        curl --progress-bar --fail-with-body -L "$1" -o "$DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified"
         verify
     fi
 }
