@@ -110,8 +110,8 @@ windres = 'x86_64-w64-mingw32-windres'
 pkg-config = 'pkg-config'
 
 [built-in options]
-c_args = ['-I$OUTPUT_BASE/include']
-cpp_args = ['-isystem', '$GCC_INCLUDE_CXX', '-isystem', '$GCC_INCLUDE_CXX_TARGET', '-isystem', '$GCC_INCLUDE_CXX_BACKWARD', '-I$OUTPUT_BASE/include']
+c_args = ['-I$OUTPUT_BASE/include', '-D__USE_MINGW_ANSI_STDIO=1', '-D_UCRT']
+cpp_args = ['-isystem', '$GCC_INCLUDE_CXX', '-isystem', '$GCC_INCLUDE_CXX_TARGET', '-isystem', '$GCC_INCLUDE_CXX_BACKWARD', '-I$OUTPUT_BASE/include', '-D__USE_MINGW_ANSI_STDIO=1', '-D_UCRT']
 c_link_args = ['-L$OUTPUT_BASE/lib', '-pthread']
 cpp_link_args = ['-L$OUTPUT_BASE/lib', '-pthread']
 
@@ -132,9 +132,6 @@ generate_cmake_toolchain_file() {
 SET(CMAKE_SYSTEM_NAME Windows)
 SET(CMAKE_SYSTEM_PROCESSOR $TARGET_CPU_FAMILY)
 
-# Skip linker test to avoid libgcc requirement during compiler detection
-#SET(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
-
 SET(CMAKE_C_COMPILER clang)
 SET(CMAKE_CXX_COMPILER clang++)
 SET(CMAKE_C_COMPILER_TARGET $TARGET_ARCH)
@@ -143,10 +140,12 @@ SET(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)
 SET(CMAKE_ASM_COMPILER clang)
 
 SET(CMAKE_C_FLAGS_INIT "--target=$TARGET_ARCH \
+-D__USE_MINGW_ANSI_STDIO=1 -D_UCRT")
+SET(CMAKE_CXX_FLAGS_INIT "--target=$TARGET_ARCH \
 -isystem $GCC_INCLUDE_CXX \
 -isystem $GCC_INCLUDE_CXX_TARGET \
--isystem $GCC_INCLUDE_CXX_BACKWARD")
-SET(CMAKE_CXX_FLAGS_INIT "--target=$TARGET_ARCH ")
+-isystem $GCC_INCLUDE_CXX_BACKWARD \
+-D__USE_MINGW_ANSI_STDIO=1 -D_UCRT")
 SET(CMAKE_EXE_LINKER_FLAGS_INIT "-L/usr/$TARGET_ARCH/lib -pthread")
 SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-L/usr/$TARGET_ARCH/lib -pthread")
 SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-L/usr/$TARGET_ARCH/lib -pthread")
@@ -169,11 +168,12 @@ export MAKEFLAGS="-j $(nproc)"
 export CC="clang --target=$TARGET_ARCH"
 export CXX="clang++ --target=$TARGET_ARCH"
 export LD="clang --target=$TARGET_ARCH -L$OUTPUT_BASE/lib -L/usr/$TARGET_ARCH/lib"
-export CFLAGS="-pthread"
-export CXXFLAGS="-pthread \
--isystem $GCC_INCLUDE_CXX \
+export CFLAGS="-D__USE_MINGW_ANSI_STDIO=1 -D_UCRT"
+
+export CXXFLAGS="-isystem $GCC_INCLUDE_CXX \
 -isystem $GCC_INCLUDE_CXX_TARGET \
--isystem $GCC_INCLUDE_CXX_BACKWARD"
+-isystem $GCC_INCLUDE_CXX_BACKWARD \
+-D__USE_MINGW_ANSI_STDIO=1 -D_UCRT"
 export LDFLAGS="-pthread"
 export AR=x86_64-w64-mingw32-ar
 export RANLIB=x86_64-w64-mingw32-ranlib

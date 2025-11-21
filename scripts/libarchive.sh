@@ -55,9 +55,7 @@ build() {
         -DHAVE_FCHMOD=0 \
         -DHAVE_FORK=0 \
         -DHAVE_VFORK=0 \
-        -DHAVE_PIPE=0 \
-        -DCMAKE_C_FLAGS="-D__USE_MINGW_ANSI_STDIO=1 -D_UCRT" \
-        -DCMAKE_CXX_FLAGS="-D__USE_MINGW_ANSI_STDIO=1 -D_UCRT"
+        -DHAVE_PIPE=0
     ninja
     ninja install
 }

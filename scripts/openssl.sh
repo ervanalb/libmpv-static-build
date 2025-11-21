@@ -17,13 +17,8 @@ build() {
 
     cd "$WORK"
 
-    # Set up environment for cross-compilation with clang
-    export CC="clang --target=$TARGET_ARCH"
-    export CXX="clang++ --target=$TARGET_ARCH"
-    export AR="x86_64-w64-mingw32-ar"
-    export RANLIB="x86_64-w64-mingw32-ranlib"
-    export RC="x86_64-w64-mingw32-windres"
-    export LD="x86_64-w64-mingw32-ld"
+    generate_cross_env;
+    . cross.env
 
     ./Configure \
         --prefix=${OUTPUT_BASE} \
@@ -69,8 +64,8 @@ build() {
         no-cmp \
         no-dh \
         no-bf \
-        zlib \
-        -L${OUTPUT_BASE}/lib
+        zlib
+
 
     make build_sw
     make install_sw
