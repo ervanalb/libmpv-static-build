@@ -1,16 +1,12 @@
 set -euo pipefail
 
 BASE="$(cd "$(dirname "$0")/.." && pwd)"
+
 DOWNLOADS_BASE="${BASE}/downloads"
-WORK_BASE="${BASE}/work"
-OUTPUT_BASE="${BASE}/output"
 FETCH_BASE="${BASE}/fetch"
 PATCH_BASE="${BASE}/patches"
 
-export PKG_CONFIG_SYSROOT_DIR="$OUTPUT_BASE"
-
 SOURCE_ARCHIVE="$PKGNAME-$PKGVER.tar.gz"
-WORK="$WORK_BASE/$PKGNAME-$PKGVER"
 FETCH="$FETCH_BASE/$PKGNAME-$PKGVER"
 
 run() {
@@ -21,7 +17,23 @@ run() {
             download
             ;;
         build)
-            echo "Building ${PKGNAME}"
+            case "$TARGET" in
+              "x86_64-pc-windows-gnu")
+                TARGET_CPU_FAMILY="x86_64"
+                TARGET_ARCH="x86_64-w64-mingw32"
+                TOOLCHAIN_PREFIX="$TARGET_ARCH-"
+                OS="WIN32"
+                ;;
+              *)
+                echo "ERROR: Bad TARGET variable. Available targets:" >&2
+                echo "  * x86_64-pc-windows-gnu" >&2
+                exit 1
+                ;;
+            esac
+
+            _build_common
+
+            echo "Building ${PKGNAME} for ${TARGET}"
             build
             ;;
         *)
@@ -29,6 +41,23 @@ run() {
             exit 1
             ;;
     esac
+}
+
+_build_common() {
+    TARGET_BASE="${BASE}/${TARGET}"
+    WORK_BASE="${TARGET_BASE}/work"
+    WORK="$WORK_BASE/$PKGNAME-$PKGVER"
+    OUTPUT_BASE="${TARGET_BASE}/output"
+    export PKG_CONFIG_SYSROOT_DIR="$OUTPUT_BASE"
+
+    GCC_LIBDIR="$($TARGET_ARCH-g++ -print-file-name=libgcc.a | xargs dirname)"
+    GCC_INCLUDE_CXX="$GCC_LIBDIR/include/c++"
+    GCC_INCLUDE_CXX_TARGET="$GCC_LIBDIR/include/c++/$TARGET_ARCH"
+    GCC_INCLUDE_CXX_BACKWARD="$GCC_LIBDIR/include/c++/backward"
+
+    # Common compiler flags (append to existing CFLAGS/CXXFLAGS if set)
+    BASE_CFLAGS="-pthread -I$OUTPUT_BASE/include"
+    BASE_CXXFLAGS="-pthread -isystem $GCC_INCLUDE_CXX -isystem $GCC_INCLUDE_CXX_TARGET -isystem $GCC_INCLUDE_CXX_BACKWARD -I$OUTPUT_BASE/include"
 }
 
 fetch_url() {
@@ -90,19 +119,7 @@ patch_meson_iconv_dependency() {
     sed -i "s/dependency('iconv'/dependency('iconv_'/g" meson.build
 }
 
-TARGET_CPU_FAMILY="x86_64"
-TARGET_ARCH="x86_64-w64-mingw32"
-
-GCC_LIBDIR="$($TARGET_ARCH-g++ -print-file-name=libgcc.a | xargs dirname)"
-GCC_INCLUDE_CXX="$GCC_LIBDIR/include/c++"
-GCC_INCLUDE_CXX_TARGET="$GCC_LIBDIR/include/c++/$TARGET_ARCH"
-GCC_INCLUDE_CXX_BACKWARD="$GCC_LIBDIR/include/c++/backward"
-
-# Common compiler flags (append to existing CFLAGS/CXXFLAGS if set)
-BASE_CFLAGS="-pthread -I$OUTPUT_BASE/include"
-BASE_CXXFLAGS="-pthread -isystem $GCC_INCLUDE_CXX -isystem $GCC_INCLUDE_CXX_TARGET -isystem $GCC_INCLUDE_CXX_BACKWARD -I$OUTPUT_BASE/include"
-
-format_meson_array() {
+_format_meson_array() {
     local result=""
     for arg in "$@"; do
         if [ -n "$result" ]; then
@@ -120,17 +137,22 @@ generate_meson_cross() {
     CFLAGS_ARRAY=($CFLAGS)
     CXXFLAGS_ARRAY=($CXXFLAGS)
 
-    CFLAGS_MESON=$(format_meson_array "${CFLAGS_ARRAY[@]}")
-    CXXFLAGS_MESON=$(format_meson_array "${CXXFLAGS_ARRAY[@]}")
+    CFLAGS_MESON=$(_format_meson_array "${CFLAGS_ARRAY[@]}")
+    CXXFLAGS_MESON=$(_format_meson_array "${CXXFLAGS_ARRAY[@]}")
+
+    WINDRES=""
+    if [[ "$OS" == "WIN32" ]]; then
+        WINDRES="windres = '${TOOLCHAIN_PREFIX}windres'"
+    fi
 
     cat <<EOF > meson_cross.txt
 [binaries]
 c = ['clang', '--target=$TARGET_ARCH']
 cpp = ['clang++', '--target=$TARGET_ARCH']
-ar = 'x86_64-w64-mingw32-ar'
-ranlib = 'x86_64-w64-mingw32-ranlib'
-strip = 'x86_64-w64-mingw32-strip'
-windres = 'x86_64-w64-mingw32-windres'
+ar = '${TOOLCHAIN_PREFIX}ar'
+ranlib = '${TOOLCHAIN_PREFIX}ranlib'
+strip = '${TOOLCHAIN_PREFIX}strip'
+${WINDRES}
 pkg-config = 'pkg-config'
 
 [built-in options]
@@ -155,6 +177,11 @@ generate_cmake_toolchain_file() {
     CFLAGS="$BASE_CFLAGS${CFLAGS:+ $CFLAGS}"
     CXXFLAGS="$BASE_CXXFLAGS${CXXFLAGS:+ $CXXFLAGS}"
 
+    WINDRES=""
+    if [[ "$OS" == "WIN32" ]]; then
+        WINDRES="SET(CMAKE_RC_COMPILER ${TOOLCHAIN_PREFIX}windres)"
+    fi
+
     cat <<EOF > toolchain.cmake
 SET(CMAKE_SYSTEM_NAME Windows)
 SET(CMAKE_SYSTEM_PROCESSOR $TARGET_CPU_FAMILY)
@@ -163,7 +190,7 @@ SET(CMAKE_C_COMPILER clang)
 SET(CMAKE_CXX_COMPILER clang++)
 SET(CMAKE_C_COMPILER_TARGET $TARGET_ARCH)
 SET(CMAKE_CXX_COMPILER_TARGET $TARGET_ARCH)
-SET(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)
+${WINDRES}
 SET(CMAKE_ASM_COMPILER clang)
 
 SET(CMAKE_C_FLAGS_INIT "--target=$TARGET_ARCH $CFLAGS")
@@ -197,8 +224,8 @@ export LD="clang --target=$TARGET_ARCH -L$OUTPUT_BASE/lib -L/usr/$TARGET_ARCH/li
 export CFLAGS="$CFLAGS"
 export CXXFLAGS="$CXXFLAGS"
 export LDFLAGS="-pthread"
-export AR=x86_64-w64-mingw32-ar
-export RANLIB=x86_64-w64-mingw32-ranlib
+export AR=${TOOLCHAIN_PREFIX}ar
+export RANLIB=${TOOLCHAIN_PREFIX}ranlib
 export PKG_CONFIG=pkg-config
 export PREFIX=$OUTPUT_BASE
 export PKG_CONFIG_PATH=$OUTPUT_BASE/lib/pkgconfig
