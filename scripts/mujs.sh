@@ -17,6 +17,7 @@ build() {
 
     cd "$WORK"
 
+    CFLAGS="-std=c99 -Wall -Wextra -Wno-unused-parameter"
     generate_cross_env
     source cross.env
 
@@ -24,7 +25,7 @@ build() {
     make build/release/libmujs.a \
         CC="$CC" \
         AR="$AR" \
-        CFLAGS="-std=c99 -Wall -Wextra -Wno-unused-parameter" \
+        CFLAGS="$CFLAGS" \
         OPTIM="-O3"
 
     # Install manually

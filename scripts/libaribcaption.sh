@@ -17,6 +17,8 @@ build() {
 
     cd "$WORK"
 
+    CFLAGS="-DHAVE_OPENSSL=1"
+    CXXFLAGS="-DHAVE_OPENSSL=1"
     generate_cmake_toolchain_file
 
     mkdir -p build
@@ -34,9 +36,7 @@ build() {
         -DARIBCC_USE_EMBEDDED_FREETYPE=OFF \
         -DARIBCC_NO_RTTI=ON \
         -DARIBCC_USE_FONTCONFIG=ON \
-        -DARIBCC_USE_FREETYPE=ON \
-        -DCMAKE_C_FLAGS="-DHAVE_OPENSSL=1" \
-        -DCMAKE_CXX_FLAGS="-DHAVE_OPENSSL=1"
+        -DARIBCC_USE_FREETYPE=ON
 
     ninja
     ninja install

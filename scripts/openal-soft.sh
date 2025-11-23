@@ -17,6 +17,8 @@ build() {
 
     cd "$WORK"
 
+    CFLAGS="-femulated-tls"
+    CXXFLAGS="-femulated-tls"
     generate_cmake_toolchain_file
 
     mkdir -p build
@@ -28,8 +30,6 @@ build() {
         -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake \
         -DCMAKE_INSTALL_PREFIX=${OUTPUT_BASE} \
         -DCMAKE_FIND_ROOT_PATH=${OUTPUT_BASE} \
-        -DCMAKE_C_FLAGS="-femulated-tls" \
-        -DCMAKE_CXX_FLAGS="-femulated-tls" \
         -DBUILD_SHARED_LIBS=OFF \
         -DLIBTYPE=STATIC \
         -DALSOFT_UTILS=OFF \

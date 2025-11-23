@@ -25,6 +25,8 @@ build() {
     ln -sf $WORK_BASE/spirv-headers-* third_party/spirv-headers
     ln -sf $WORK_BASE/spirv-tools-* third_party/spirv-tools
 
+    CFLAGS="-DMINGW_HAS_SECURE_API=0"
+    CXXFLAGS="-std=c++17 -DMINGW_HAS_SECURE_API=0"
     generate_cmake_toolchain_file
 
     mkdir -p build
@@ -45,8 +47,6 @@ build() {
         -DENABLE_GLSLANG_BINARIES=OFF \
         -DSPIRV_TOOLS_BUILD_STATIC=ON \
         -DSPIRV_TOOLS_LIBRARY_TYPE=STATIC \
-        -DCMAKE_C_FLAGS="-DMINGW_HAS_SECURE_API=0" \
-        -DCMAKE_CXX_FLAGS="-std=c++17 -DMINGW_HAS_SECURE_API=0"
 
     ninja
 

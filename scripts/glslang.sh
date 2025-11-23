@@ -17,6 +17,8 @@ build() {
 
     cd "$WORK"
 
+    CFLAGS="-DMINGW_HAS_SECURE_API=0"
+    CXXFLAGS="-DMINGW_HAS_SECURE_API=0"
     generate_cmake_toolchain_file
 
     mkdir -p build
@@ -30,9 +32,7 @@ build() {
         -DCMAKE_FIND_ROOT_PATH=${OUTPUT_BASE} \
         -DBUILD_SHARED_LIBS=OFF \
         -DENABLE_OPT=OFF \
-        -DENABLE_GLSLANG_BINARIES=OFF \
-        -DCMAKE_C_FLAGS="-DMINGW_HAS_SECURE_API=0" \
-        -DCMAKE_CXX_FLAGS="-DMINGW_HAS_SECURE_API=0"
+        -DENABLE_GLSLANG_BINARIES=OFF
 
     ninja
     ninja install

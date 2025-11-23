@@ -98,7 +98,31 @@ GCC_INCLUDE_CXX="$GCC_LIBDIR/include/c++"
 GCC_INCLUDE_CXX_TARGET="$GCC_LIBDIR/include/c++/$TARGET_ARCH"
 GCC_INCLUDE_CXX_BACKWARD="$GCC_LIBDIR/include/c++/backward"
 
+# Common compiler flags (append to existing CFLAGS/CXXFLAGS if set)
+BASE_CFLAGS="-pthread -I$OUTPUT_BASE/include"
+BASE_CXXFLAGS="-pthread -isystem $GCC_INCLUDE_CXX -isystem $GCC_INCLUDE_CXX_TARGET -isystem $GCC_INCLUDE_CXX_BACKWARD -I$OUTPUT_BASE/include"
+
+format_meson_array() {
+    local result=""
+    for arg in "$@"; do
+        if [ -n "$result" ]; then
+            result="$result, "
+        fi
+        result="$result'$arg'"
+    done
+    echo "$result"
+}
+
 generate_meson_cross() {
+    CFLAGS="$BASE_CFLAGS${CFLAGS:+ $CFLAGS}"
+    CXXFLAGS="$BASE_CXXFLAGS${CXXFLAGS:+ $CXXFLAGS}"
+
+    CFLAGS_ARRAY=($CFLAGS)
+    CXXFLAGS_ARRAY=($CXXFLAGS)
+
+    CFLAGS_MESON=$(format_meson_array "${CFLAGS_ARRAY[@]}")
+    CXXFLAGS_MESON=$(format_meson_array "${CXXFLAGS_ARRAY[@]}")
+
     cat <<EOF > meson_cross.txt
 [binaries]
 c = ['clang', '--target=$TARGET_ARCH']
@@ -110,8 +134,8 @@ windres = 'x86_64-w64-mingw32-windres'
 pkg-config = 'pkg-config'
 
 [built-in options]
-c_args = ['-I$OUTPUT_BASE/include']
-cpp_args = ['-isystem', '$GCC_INCLUDE_CXX', '-isystem', '$GCC_INCLUDE_CXX_TARGET', '-isystem', '$GCC_INCLUDE_CXX_BACKWARD', '-I$OUTPUT_BASE/include']
+c_args = [$CFLAGS_MESON]
+cpp_args = [$CXXFLAGS_MESON]
 c_link_args = ['-L$OUTPUT_BASE/lib', '-pthread']
 cpp_link_args = ['-L$OUTPUT_BASE/lib', '-pthread']
 
@@ -128,6 +152,9 @@ EOF
 }
 
 generate_cmake_toolchain_file() {
+    CFLAGS="$BASE_CFLAGS${CFLAGS:+ $CFLAGS}"
+    CXXFLAGS="$BASE_CXXFLAGS${CXXFLAGS:+ $CXXFLAGS}"
+
     cat <<EOF > toolchain.cmake
 SET(CMAKE_SYSTEM_NAME Windows)
 SET(CMAKE_SYSTEM_PROCESSOR $TARGET_CPU_FAMILY)
@@ -139,11 +166,8 @@ SET(CMAKE_CXX_COMPILER_TARGET $TARGET_ARCH)
 SET(CMAKE_RC_COMPILER x86_64-w64-mingw32-windres)
 SET(CMAKE_ASM_COMPILER clang)
 
-SET(CMAKE_C_FLAGS_INIT "--target=$TARGET_ARCH")
-SET(CMAKE_CXX_FLAGS_INIT "--target=$TARGET_ARCH \
--isystem $GCC_INCLUDE_CXX \
--isystem $GCC_INCLUDE_CXX_TARGET \
--isystem $GCC_INCLUDE_CXX_BACKWARD")
+SET(CMAKE_C_FLAGS_INIT "--target=$TARGET_ARCH $CFLAGS")
+SET(CMAKE_CXX_FLAGS_INIT "--target=$TARGET_ARCH $CXXFLAGS")
 SET(CMAKE_EXE_LINKER_FLAGS_INIT "-L/usr/$TARGET_ARCH/lib -pthread")
 SET(CMAKE_SHARED_LINKER_FLAGS_INIT "-L/usr/$TARGET_ARCH/lib -pthread")
 SET(CMAKE_MODULE_LINKER_FLAGS_INIT "-L/usr/$TARGET_ARCH/lib -pthread")
@@ -161,15 +185,17 @@ EOF
 }
 
 generate_cross_env() {
+    CFLAGS="$BASE_CFLAGS${CFLAGS:+ $CFLAGS}"
+    CXXFLAGS="$BASE_CXXFLAGS${CXXFLAGS:+ $CXXFLAGS}"
+
     cat <<EOF > cross.env
 export MAKEFLAGS="-j $(nproc)"
 export CC="clang --target=$TARGET_ARCH"
 export CXX="clang++ --target=$TARGET_ARCH"
 export LD="clang --target=$TARGET_ARCH -L$OUTPUT_BASE/lib -L/usr/$TARGET_ARCH/lib"
 
-export CXXFLAGS="-isystem $GCC_INCLUDE_CXX \
--isystem $GCC_INCLUDE_CXX_TARGET \
--isystem $GCC_INCLUDE_CXX_BACKWARD"
+export CFLAGS="$CFLAGS"
+export CXXFLAGS="$CXXFLAGS"
 export LDFLAGS="-pthread"
 export AR=x86_64-w64-mingw32-ar
 export RANLIB=x86_64-w64-mingw32-ranlib

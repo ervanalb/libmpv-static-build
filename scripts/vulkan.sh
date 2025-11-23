@@ -20,6 +20,8 @@ build() {
     # Apply the cross-compile and static linking patch
     patch -p1 < ${PATCH_BASE}/vulkan-0001-cross-compile-static-linking-hacks.patch
 
+    CFLAGS="-D__STDC_FORMAT_MACROS -DSTRSAFE_NO_DEPRECATE -Dparse_number=cjson_parse_number"
+    CXXFLAGS="-D__STDC_FORMAT_MACROS -fpermissive"
     generate_cmake_toolchain_file
 
     mkdir -p build
@@ -35,9 +37,7 @@ build() {
         -DVULKAN_HEADERS_INSTALL_DIR=${OUTPUT_BASE} \
         -DBUILD_TESTS=OFF \
         -DENABLE_WERROR=OFF \
-        -DBUILD_STATIC_LOADER=ON \
-        -DCMAKE_C_FLAGS="-D__STDC_FORMAT_MACROS -DSTRSAFE_NO_DEPRECATE -Dparse_number=cjson_parse_number" \
-        -DCMAKE_CXX_FLAGS="-D__STDC_FORMAT_MACROS -fpermissive"
+        -DBUILD_STATIC_LOADER=ON
 
     ninja
 
