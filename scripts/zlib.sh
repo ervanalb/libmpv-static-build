@@ -37,6 +37,7 @@ build() {
     # Remove dynamic libs if they were build
     rm -f "${OUTPUT_BASE}/lib/libzlib.a.dll"
     rm -f "${OUTPUT_BASE}/bin/libzlib.dll"
+    rm -f "${OUTPUT_BASE}/lib/libz.so"*
 
     if [[ "$OS" == "WINDOWS" ]]; then
         # Rename libzlibstatic.a to libz.a so linker can find it with -lz
