@@ -30,7 +30,10 @@ build() {
         -DCMAKE_FIND_ROOT_PATH=${OUTPUT_BASE} \
         -DBUILD_SHARED_LIBS=OFF \
         -DSDL_VULKAN=ON \
-        -DSDL_TEST_LIBRARY=OFF
+        -DSDL_TEST_LIBRARY=OFF \
+        -DSDL_JACK=OFF \
+        -DSDL_PIPEWIRE=OFF \
+        -DSDL_PULSEAUDIO=OFF
 
     ninja
     ninja install

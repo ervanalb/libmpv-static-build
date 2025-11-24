@@ -19,6 +19,15 @@ build() {
 
     generate_meson_cross
 
+    case "$OS" in
+        "WINDOWS")
+            DIRECTWRITE_OPT="enabled"
+            ;;
+        "LINUX")
+            DIRECTWRITE_OPT="disabled"
+            ;;
+    esac
+
     meson setup builddir \
         --prefix="${OUTPUT_BASE}" \
         --libdir="${OUTPUT_BASE}/lib" \
@@ -26,7 +35,7 @@ build() {
         --buildtype=release \
         --default-library=static \
         -Dfontconfig=enabled \
-        -Ddirectwrite=enabled \
+        -Ddirectwrite=${DIRECTWRITE_OPT} \
         -Dlibunibreak=enabled \
         -Dtest=disabled \
         -Dcompare=disabled \
@@ -39,6 +48,15 @@ build() {
     ninja -C builddir install
 
     # Write corrected libass.pc file
+    case "$OS" in
+        "WINDOWS")
+            LIBS_LINE="-L\${libdir} -lass -lgdi32"
+            ;;
+        "LINUX")
+            LIBS_LINE="-L\${libdir} -lass"
+            ;;
+    esac
+
     cat > "${OUTPUT_BASE}/lib/pkgconfig/libass.pc" <<EOF
 prefix=${OUTPUT_BASE}
 includedir=\${prefix}/include
@@ -48,7 +66,7 @@ Name: libass
 Description: libass is an SSA/ASS subtitles rendering library
 Version: ${PKGVER}
 Requires: freetype2 >=  9.17.3, fribidi >=  0.19.1, harfbuzz >=  1.2.3, libunibreak >=  1.1, fontconfig >=  2.10.92
-Libs: -L\${libdir} -lass -lgdi32
+Libs: ${LIBS_LINE}
 Cflags: -I\${includedir}
 EOF
 }

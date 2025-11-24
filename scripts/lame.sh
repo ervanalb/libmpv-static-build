@@ -39,8 +39,10 @@ build() {
     make
     make install
 
-    # Rename .lib to .a for compatibility with lld linker
-    mv "${OUTPUT_BASE}/lib/libmp3lame.lib" "${OUTPUT_BASE}/lib/libmp3lame.a"
+    # Rename .lib to .a (Windows only)
+    if [[ "$OS" == "WINDOWS" ]]; then
+        mv "${OUTPUT_BASE}/lib/libmp3lame.lib" "${OUTPUT_BASE}/lib/libmp3lame.a"
+    fi
 
     # Create lame.pc file
     # (not sure why this isn't installed)

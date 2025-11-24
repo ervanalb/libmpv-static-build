@@ -58,9 +58,11 @@ ALL_SCRIPTS=(
     svtav1.sh
     dav1d.sh
     uavs3d.sh
+    libpciaccess.sh
+    libdrm.sh
     libva.sh
     openal-soft.sh
-    vapoursynth.sh 
+    vapoursynth.sh
     ffmpeg.sh
     lua.sh
     uchardet.sh

@@ -38,8 +38,10 @@ build() {
     rm -f "${OUTPUT_BASE}/lib/libzlib.a.dll"
     rm -f "${OUTPUT_BASE}/bin/libzlib.dll"
 
-    # Rename libzlibstatic.a to libz.a so linker can find it with -lz
-    mv "${OUTPUT_BASE}/lib/libzlibstatic.a" "${OUTPUT_BASE}/lib/libz.a"
+    if [[ "$OS" == "WINDOWS" ]]; then
+        # Rename libzlibstatic.a to libz.a so linker can find it with -lz
+        mv "${OUTPUT_BASE}/lib/libzlibstatic.a" "${OUTPUT_BASE}/lib/libz.a"
+    fi
 }
 
 run "$@"

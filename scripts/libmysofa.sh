@@ -30,6 +30,7 @@ build() {
         -DCMAKE_FIND_ROOT_PATH=${OUTPUT_BASE} \
         -DBUILD_SHARED_LIBS=OFF \
         -DBUILD_TESTS=OFF \
+        -DMATH=m \
         -DCMAKE_POLICY_VERSION_MINIMUM=3.5
 
     ninja

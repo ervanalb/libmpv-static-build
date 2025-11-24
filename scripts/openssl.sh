@@ -20,11 +20,16 @@ build() {
     generate_cross_env;
     . cross.env
 
+    MINGW=""
+    if [[ "$OS" == "WINDOWS" ]]; then
+        MINGW="mingw64"
+    fi
+
     ./Configure \
         --prefix=${OUTPUT_BASE} \
         --libdir=lib \
         --release \
-        mingw64 \
+        $MINGW \
         no-autoload-config \
         -I${OUTPUT_BASE}/include \
         no-ssl3-method \

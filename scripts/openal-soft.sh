@@ -17,8 +17,16 @@ build() {
 
     cd "$WORK"
 
-    CFLAGS="-femulated-tls"
-    CXXFLAGS="-femulated-tls"
+    case "$OS" in
+        "LINUX")
+            CFLAGS=""
+            CXXFLAGS=""
+            ;;
+        "WINDOWS")
+            CFLAGS="-femulated-tls"
+            CXXFLAGS="-femulated-tls"
+            ;;
+    esac
     generate_cmake_toolchain_file
 
     mkdir -p build
@@ -36,6 +44,7 @@ build() {
         -DALSOFT_EXAMPLES=OFF \
         -DALSOFT_TESTS=OFF \
         -DALSOFT_BACKEND_PIPEWIRE=OFF \
+        -DALSOFT_RTKIT=OFF \
         -DALSOFT_DLOPEN=OFF
 
     ninja

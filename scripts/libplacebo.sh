@@ -64,12 +64,22 @@ build() {
 
     generate_meson_cross
 
+    # D3D11 is Windows-only
+    case "$OS" in
+        "LINUX")
+            D3D11_OPT="-Dd3d11=disabled"
+            ;;
+        "WINDOWS")
+            D3D11_OPT="-Dd3d11=enabled"
+            ;;
+    esac
+
     meson setup build \
         --prefix=${OUTPUT_BASE} \
         --libdir=${OUTPUT_BASE}/lib \
         --cross-file=meson_cross.txt \
         --default-library=static \
-        -Dd3d11=enabled \
+        ${D3D11_OPT} \
         -Ddebug=false \
         -Db_ndebug=true \
         -Doptimization=3 \
@@ -80,12 +90,23 @@ build() {
     ninja -C build install
 
     # Write corrected libplacebo.pc file
+    case "$OS" in
+        "LINUX")
+            PL_HAS_D3D11=0
+            PL_LIBS="-L\${libdir} -lplacebo"
+            ;;
+        "WINDOWS")
+            PL_HAS_D3D11=1
+            PL_LIBS="-L\${libdir} -lplacebo -lshlwapi -lversion"
+            ;;
+    esac
+
     cat > "${OUTPUT_BASE}/lib/pkgconfig/libplacebo.pc" <<EOF
 prefix=${OUTPUT_BASE}
 includedir=\${prefix}/include
 libdir=\${prefix}/lib
 
-pl_has_d3d11=1
+pl_has_d3d11=${PL_HAS_D3D11}
 pl_has_dovi=1
 pl_has_gl_proc_addr=1
 pl_has_glslang=0
@@ -101,7 +122,7 @@ Name: libplacebo
 Description: Reusable library for GPU-accelerated video/image rendering
 Version: ${PKGVER}
 Requires: shaderc >= 2019.1, spirv-cross-c-shared >= 0.29.0, vulkan, lcms2 >= 2.9
-Libs: -L\${libdir} -lplacebo -lshlwapi -lversion
+Libs: ${PL_LIBS}
 Cflags: -I\${includedir} -DPL_STATIC
 EOF
 }

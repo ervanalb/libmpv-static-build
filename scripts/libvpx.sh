@@ -17,9 +17,11 @@ build() {
 
     cd "$WORK"
 
-    CROSS=${TARGET_ARCH}- ./configure \
+    generate_cross_env
+    . cross.env
+
+    ./configure \
         --extra-cflags='-fno-asynchronous-unwind-tables' \
-        --target=x86_64-win64-gcc \
         --prefix=${OUTPUT_BASE} \
         --disable-examples \
         --disable-docs \
@@ -30,7 +32,8 @@ build() {
         --disable-shared \
         --enable-static \
         --as=yasm \
-        --enable-vp9-highbitdepth
+        --enable-vp9-highbitdepth \
+        --disable-avx512
 
     make
     make install

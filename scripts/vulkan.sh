@@ -12,13 +12,25 @@ download() {
 }
 
 build() {
+    # Skip Vulkan on Linux - use system libvulkan dynamically instead
+    case "$OS" in
+        "LINUX")
+            echo "Skipping Vulkan on Linux (use system library)"
+            return 0
+            ;;
+        "WINDOWS")
+            ;;
+    esac
+
     extract
     setup_output
 
     cd "$WORK"
 
-    # Apply the cross-compile and static linking patch
-    patch -p1 < ${PATCH_BASE}/vulkan-0001-cross-compile-static-linking-hacks.patch
+    # Apply the cross-compile and static linking patch (Windows only)
+    if [[ "$OS" == "WINDOWS" ]]; then
+        patch -p1 < ${PATCH_BASE}/vulkan-0001-cross-compile-static-linking-hacks.patch
+    fi
 
     CFLAGS="-D__STDC_FORMAT_MACROS -DSTRSAFE_NO_DEPRECATE -Dparse_number=cjson_parse_number"
     CXXFLAGS="-D__STDC_FORMAT_MACROS -fpermissive"
@@ -26,6 +38,16 @@ build() {
 
     mkdir -p build
     cd build
+
+    # Disable WSI (Window System Integration) for Linux as we don't have X11/Wayland dependencies
+    case "$OS" in
+        "LINUX")
+            WSI_OPTIONS="-DBUILD_WSI_XCB_SUPPORT=OFF -DBUILD_WSI_XLIB_SUPPORT=OFF -DBUILD_WSI_WAYLAND_SUPPORT=OFF"
+            ;;
+        "WINDOWS")
+            WSI_OPTIONS=""
+            ;;
+    esac
 
     cmake .. \
         -G Ninja \
@@ -37,13 +59,22 @@ build() {
         -DVULKAN_HEADERS_INSTALL_DIR=${OUTPUT_BASE} \
         -DBUILD_TESTS=OFF \
         -DENABLE_WERROR=OFF \
-        -DBUILD_STATIC_LOADER=ON
+        -DBUILD_STATIC_LOADER=ON \
+        ${WSI_OPTIONS}
 
     ninja
 
     # Custom install commands as per cmake config
-    cp loader/libvulkan.a ${OUTPUT_BASE}/lib/libvulkan.a
-    cp loader/vulkan_own.pc ${OUTPUT_BASE}/lib/pkgconfig/vulkan.pc
+    case "$OS" in
+        "WINDOWS")
+            cp loader/libvulkan.a ${OUTPUT_BASE}/lib/libvulkan.a
+            cp loader/vulkan_own.pc ${OUTPUT_BASE}/lib/pkgconfig/vulkan.pc
+            ;;
+        "LINUX")
+            # On Linux, static loader doesn't build, use shared library
+            ninja install
+            ;;
+    esac
 }
 
 run "$@"

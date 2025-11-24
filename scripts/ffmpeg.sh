@@ -20,18 +20,32 @@ build() {
     generate_cross_env
     source cross.env
 
+    case "$OS" in
+        "LINUX")
+            FFMPEG_TARGET_OS="linux"
+            FFMPEG_EXTRA_LIBS="-lstdc++ -lpthread -latomic -lm"
+            FFMPEG_PLATFORM_OPTS="--disable-xlib"
+
+            # Override PKG_CONFIG_PATH to prevent finding system libraries
+            PKG_CONFIG_PATH=$PKG_CONFIG_LIBDIR
+            ;;
+        "WINDOWS")
+            FFMPEG_TARGET_OS="mingw32"
+            FFMPEG_EXTRA_LIBS="-lwinmm -lavrt -latomic -lole32 -lshell32 -luuid -lstdc++"
+            FFMPEG_PLATFORM_OPTS="--enable-cross-compile --windres=x86_64-w64-mingw32-windres"
+            ;;
+    esac
+
     ./configure \
         --prefix=${OUTPUT_BASE} \
         --arch=x86_64 \
-        --target-os=mingw32 \
+        --target-os=$FFMPEG_TARGET_OS \
         --cc="$CC" \
         --cxx="$CXX" \
-        --ld="$LD" \
         --ar="$AR" \
         --ranlib="$RANLIB" \
-        --windres=x86_64-w64-mingw32-windres \
         --pkg-config-flags=--static \
-        --enable-cross-compile \
+        $FFMPEG_PLATFORM_OPTS \
         --enable-static \
         --disable-shared \
         --enable-runtime-cpudetect \
@@ -78,7 +92,7 @@ build() {
         --disable-videotoolbox \
         --extra-cflags='-Wno-error=int-conversion -DAL_LIBTYPE_STATIC' \
         --extra-ldflags='-Wl,--allow-multiple-definition' \
-        --extra-libs='-lwinmm -lavrt -latomic -lole32 -lshell32 -luuid -lstdc++'
+        --extra-libs="$FFMPEG_EXTRA_LIBS"
 
     make
     make install

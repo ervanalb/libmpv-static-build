@@ -31,8 +31,10 @@ build() {
     make
     make install
 
-    # Rename .lib to .a for compatibility with lld linker
-    mv "${OUTPUT_BASE}/lib/libmodplug.lib" "${OUTPUT_BASE}/lib/libmodplug.a"
+    # Rename .lib to .a (Windows only)
+    if [[ "$OS" == "WINDOWS" ]]; then
+        mv "${OUTPUT_BASE}/lib/libmodplug.lib" "${OUTPUT_BASE}/lib/libmodplug.a"
+    fi
 
     # Write corrected libmodplug.pc file with MODPLUG_STATIC define
     cat > "${OUTPUT_BASE}/lib/pkgconfig/libmodplug.pc" <<EOF

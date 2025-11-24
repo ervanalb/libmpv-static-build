@@ -21,41 +21,56 @@ build() {
     mkdir builddir
     cd builddir
 
-    cmake .. \
-        -G Ninja \
-        -DCMAKE_BUILD_TYPE=Release \
-        -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake \
-        -DCMAKE_INSTALL_PREFIX=${OUTPUT_BASE} \
-        -DCMAKE_FIND_ROOT_PATH=${OUTPUT_BASE} \
-        -DCMAKE_INSTALL_LIBDIR=lib \
-        -DBUILD_SHARED_LIBS=OFF \
-        -DBUILD_SHARED_LIBS=OFF \
-        -DENABLE_ZLIB=ON \
-        -DENABLE_ZSTD=ON \
-        -DENABLE_OPENSSL=ON \
-        -DENABLE_BZip2=ON \
-        -DENABLE_ICONV=ON \
-        -DENABLE_LIBXML2=ON \
-        -DENABLE_EXPAT=ON \
-        -DENABLE_LZO=OFF \
-        -DENABLE_LZMA=ON \
-        -DENABLE_CPIO=OFF \
-        -DENABLE_CAT=OFF \
-        -DENABLE_TAR=OFF \
-        -DENABLE_WERROR=OFF \
-        -DBUILD_TESTING=OFF \
-        -DENABLE_TEST=OFF \
-        -DENABLE_ACL=OFF \
-        -DWINDOWS_VERSION=WIN10 \
-        -DCMAKE_POLICY_VERSION_MINIMUM=3.5 \
-        -DHAVE_NL_LANGINFO=0 \
-        -DHAVE_LANGINFO_H=0 \
-        -DHAVE_SYMLINK=0 \
-        -DHAVE_LCHMOD=0 \
-        -DHAVE_FCHMOD=0 \
-        -DHAVE_FORK=0 \
-        -DHAVE_VFORK=0 \
-        -DHAVE_PIPE=0
+    CMAKE_OPTS=(
+        -G Ninja
+        -DCMAKE_BUILD_TYPE=Release
+        -DCMAKE_TOOLCHAIN_FILE=toolchain.cmake
+        -DCMAKE_INSTALL_PREFIX=${OUTPUT_BASE}
+        -DCMAKE_FIND_ROOT_PATH=${OUTPUT_BASE}
+        -DCMAKE_INSTALL_LIBDIR=lib
+        -DBUILD_SHARED_LIBS=OFF
+        -DENABLE_ZLIB=ON
+        -DENABLE_ZSTD=ON
+        -DENABLE_OPENSSL=ON
+        -DENABLE_BZip2=ON
+        -DENABLE_ICONV=ON
+        -DENABLE_LIBXML2=ON
+        -DENABLE_EXPAT=ON
+        -DENABLE_LZO=OFF
+        -DENABLE_LZMA=ON
+        -DENABLE_CPIO=OFF
+        -DENABLE_CAT=OFF
+        -DENABLE_TAR=OFF
+        -DENABLE_WERROR=OFF
+        -DBUILD_TESTING=OFF
+        -DENABLE_TEST=OFF
+        -DENABLE_ACL=OFF
+        -DCMAKE_POLICY_VERSION_MINIMUM=3.5
+    )
+
+    case "$OS" in
+        "LINUX")
+            # For Linux static linking, manually add OpenSSL's compression dependencies
+            # CMake's FindOpenSSL doesn't handle transitive deps from libcrypto.pc
+            # Need to add both brotli AND zstd here because of link order issues
+            CMAKE_OPTS+=("-DCMAKE_EXE_LINKER_FLAGS=-Wl,--start-group -lbrotlienc -lbrotlidec -lbrotlicommon -lzstd -lm -ldl -pthread -Wl,--end-group")
+            ;;
+        "WINDOWS")
+            CMAKE_OPTS+=(
+                -DWINDOWS_VERSION=WIN10
+                -DHAVE_NL_LANGINFO=0
+                -DHAVE_LANGINFO_H=0
+                -DHAVE_SYMLINK=0
+                -DHAVE_LCHMOD=0
+                -DHAVE_FCHMOD=0
+                -DHAVE_FORK=0
+                -DHAVE_VFORK=0
+                -DHAVE_PIPE=0
+            )
+            ;;
+    esac
+
+    cmake .. "${CMAKE_OPTS[@]}"
     ninja
     ninja install
 }

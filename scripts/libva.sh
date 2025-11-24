@@ -22,6 +22,16 @@ build() {
 
     generate_meson_cross
 
+    # Set OS-specific backend options
+    case "$OS" in
+        "LINUX")
+            LIBVA_BACKENDS="-Dwith_win32=no -Ddisable_drm=false"
+            ;;
+        "WINDOWS")
+            LIBVA_BACKENDS="-Dwith_win32=yes -Ddisable_drm=true"
+            ;;
+    esac
+
     meson setup build \
         --prefix=${OUTPUT_BASE} \
         --libdir=${OUTPUT_BASE}/lib \
@@ -29,7 +39,9 @@ build() {
         --buildtype=release \
         --default-library=static \
         -Denable_docs=false \
+        -Dwith_x11=no \
         -Dwith_wayland=no \
+        $LIBVA_BACKENDS
 
     meson_ninja_remove_invalid_linker_args build
     ninja -C build

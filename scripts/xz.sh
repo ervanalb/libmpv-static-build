@@ -12,11 +12,11 @@ download() {
 }
 
 build() {
-    extract;
-    setup_output;
+    extract
+    setup_output
 
     cd "$WORK"
-    generate_cmake_toolchain_file;
+    generate_cmake_toolchain_file
 
     mkdir build
     cd build

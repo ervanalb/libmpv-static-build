@@ -36,8 +36,10 @@ build() {
     make
     make install
 
-    # Rename .lib to .a for compatibility with lld linker
-    mv "${OUTPUT_BASE}/lib/libbs2b.lib" "${OUTPUT_BASE}/lib/libbs2b.a"
+    # Rename .lib to .a (Windows only)
+    if [[ "$OS" == "WINDOWS" ]]; then
+        mv "${OUTPUT_BASE}/lib/libbs2b.lib" "${OUTPUT_BASE}/lib/libbs2b.a"
+    fi
 }
 
 run "$@"

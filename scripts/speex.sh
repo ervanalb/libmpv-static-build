@@ -31,8 +31,10 @@ build() {
     make
     make install
 
-    # Rename .lib to .a for compatibility with lld linker
-    mv "${OUTPUT_BASE}/lib/libspeex.lib" "${OUTPUT_BASE}/lib/libspeex.a"
+    # Rename .lib to .a (Windows only)
+    if [[ "$OS" == "WINDOWS" ]]; then
+        mv "${OUTPUT_BASE}/lib/libspeex.lib" "${OUTPUT_BASE}/lib/libspeex.a"
+    fi
 }
 
 run "$@"

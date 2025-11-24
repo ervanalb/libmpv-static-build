@@ -1,4 +1,4 @@
-work/
-downloads/
-output/
-fetch/
+/fetch/
+/downloads/
+/*/work/
+/*/output/

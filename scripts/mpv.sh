@@ -25,6 +25,16 @@ build() {
 
     generate_meson_cross
 
+    # Set OS-specific options
+    case "$OS" in
+        "LINUX")
+            PLATFORM_OPTS="-Dshaderc=disabled -Dspirv-cross=disabled -Degl-angle=disabled"
+            ;;
+        "WINDOWS")
+            PLATFORM_OPTS="-Dshaderc=enabled -Dspirv-cross=enabled -Degl-angle=enabled"
+            ;;
+    esac
+
     # Configure mpv with LGPL-compatible options only
     meson setup build \
         --prefix=${OUTPUT_BASE} \
@@ -49,11 +59,10 @@ build() {
         -Drubberband=disabled \
         -Dlcms2=enabled \
         -Dopenal=enabled \
-        -Dspirv-cross=enabled \
+        $PLATFORM_OPTS \
         -Dvulkan=enabled \
         -Dvapoursynth=disabled \
         -Dgl=enabled \
-        -Degl-angle=enabled \
 
     meson_ninja_remove_invalid_linker_args build
     ninja -C build

@@ -17,10 +17,12 @@ build() {
 
     cd "$WORK"
 
-    # Apply patches
-    for patch in "${BASE}/patches/fontconfig-"*.patch; do
-        patch -p1 < "$patch"
-    done
+    # Apply patches (Windows only)
+    if [[ "$OS" == "WINDOWS" ]]; then
+        for patch in "${BASE}/patches/fontconfig-"*.patch; do
+            patch -p1 < "$patch"
+        done
+    fi
 
     # Modify src/meson.build to use static library only
     sed -i "s/both_libraries/library/g" src/meson.build
