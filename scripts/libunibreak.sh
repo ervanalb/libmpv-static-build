@@ -28,11 +28,6 @@ build() {
 
     make
     make install
-
-    # Rename .lib to .a (Windows only)
-    if [[ "$OS" == "WINDOWS" ]]; then
-        mv "${OUTPUT_BASE}/lib/libunibreak.lib" "${OUTPUT_BASE}/lib/libunibreak.a"
-    fi
 }
 
 run "$@"

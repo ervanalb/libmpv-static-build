@@ -20,7 +20,17 @@ build() {
     generate_cross_env
     . cross.env
 
+    case "$TARGET" in
+        "x86_64-pc-windows-gnu")
+            VPX_TARGET="x86_64-win64-gcc"
+            ;;
+        "x86_64-unknown-linux-gnu")
+            VPX_TARGET="x86_64-linux-gcc"
+            ;;
+    esac
+
     ./configure \
+        --target=${VPX_TARGET} \
         --extra-cflags='-fno-asynchronous-unwind-tables' \
         --prefix=${OUTPUT_BASE} \
         --disable-examples \

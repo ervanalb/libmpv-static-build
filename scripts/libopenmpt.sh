@@ -34,11 +34,6 @@ build() {
 
     make
     make install
-
-    # Rename .lib to .a (Windows only)
-    if [[ "$OS" == "WINDOWS" ]]; then
-        mv "${OUTPUT_BASE}/lib/libopenmpt.lib" "${OUTPUT_BASE}/lib/libopenmpt.a"
-    fi
 }
 
 run "$@"

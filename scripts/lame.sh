@@ -39,11 +39,6 @@ build() {
     make
     make install
 
-    # Rename .lib to .a (Windows only)
-    if [[ "$OS" == "WINDOWS" ]]; then
-        mv "${OUTPUT_BASE}/lib/libmp3lame.lib" "${OUTPUT_BASE}/lib/libmp3lame.a"
-    fi
-
     # Create lame.pc file
     # (not sure why this isn't installed)
     cat > "${OUTPUT_BASE}/lib/pkgconfig/lame.pc" <<EOF

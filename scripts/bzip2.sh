@@ -18,7 +18,7 @@ build() {
 
     generate_cross_env;
     . cross.env
-    make libbz2.a CC="$CC" AR="$AR" RANLIB="$RANLIB" PREFIX="$PREFIX"
+    make libbz2.a CC="$CC" AR="$AR" RANLIB="$RANLIB" PREFIX="$PREFIX" CFLAGS="$CFLAGS" LDFLAGS="$LDFLAGS"
 
     # Install
     mkdir -p "$OUTPUT_BASE/include"

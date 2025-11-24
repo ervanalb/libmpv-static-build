@@ -31,12 +31,6 @@ build() {
     make
     make install
 
-    # Rename .lib to .a (Windows only)
-    if [[ "$OS" == "WINDOWS" ]]; then
-        mv "${OUTPUT_BASE}/lib/libiconv.lib" "${OUTPUT_BASE}/lib/libiconv.a"
-        mv "${OUTPUT_BASE}/lib/libcharset.lib" "${OUTPUT_BASE}/lib/libcharset.a"
-    fi
-
     # Create pkg-config file with underscore to avoid Meson's built-in detection
     cat > "${OUTPUT_BASE}/lib/pkgconfig/iconv_.pc" <<EOF
 prefix=${OUTPUT_BASE}

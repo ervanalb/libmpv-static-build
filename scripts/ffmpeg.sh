@@ -31,7 +31,7 @@ build() {
             ;;
         "WINDOWS")
             FFMPEG_TARGET_OS="mingw32"
-            FFMPEG_EXTRA_LIBS="-lwinmm -lavrt -latomic -lole32 -lshell32 -luuid -lstdc++"
+            FFMPEG_EXTRA_LIBS=" -pthread -lwinmm -lavrt -latomic -lole32 -lshell32 -luuid -lstdc++"
             FFMPEG_PLATFORM_OPTS="--enable-cross-compile --windres=x86_64-w64-mingw32-windres"
             ;;
     esac
@@ -91,7 +91,7 @@ build() {
         --disable-vdpau \
         --disable-videotoolbox \
         --extra-cflags='-Wno-error=int-conversion -DAL_LIBTYPE_STATIC' \
-        --extra-ldflags='-Wl,--allow-multiple-definition' \
+        --extra-ldflags="-Wl,--allow-multiple-definition -L${OUTPUT_BASE}/lib" \
         --extra-libs="$FFMPEG_EXTRA_LIBS"
 
     make

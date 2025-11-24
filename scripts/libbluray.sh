@@ -37,11 +37,6 @@ build() {
 
     make
     make install
-
-    # Rename .lib to .a (Windows only)
-    if [[ "$OS" == "WINDOWS" ]]; then
-        mv "${OUTPUT_BASE}/lib/libbluray.lib" "${OUTPUT_BASE}/lib/libbluray.a"
-    fi
 }
 
 run "$@"

@@ -58,12 +58,9 @@ build() {
     make
     make install
 
-    # Rename .lib to .a (Windows only)
+    # Localize conflicting math wrapper symbols to avoid duplicate symbol errors with mingw (Windows only)
+    # These wrapper functions conflict with mingw's libmingwex.a implementations
     if [[ "$OS" == "WINDOWS" ]]; then
-        mv "${OUTPUT_BASE}/lib/libzimg.lib" "${OUTPUT_BASE}/lib/libzimg.a"
-
-        # Localize conflicting math wrapper symbols to avoid duplicate symbol errors with mingw
-        # These wrapper functions conflict with mingw's libmingwex.a implementations
         x86_64-w64-mingw32-objcopy --localize-symbol=expf --localize-symbol=powf "${OUTPUT_BASE}/lib/libzimg.a"
     fi
 }

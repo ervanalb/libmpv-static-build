@@ -26,7 +26,8 @@ build() {
         CC="$CC" \
         AR="$AR rcu" \
         RANLIB="$RANLIB" \
-        MYCFLAGS="-DLUA_COMPAT_5_3" \
+        MYCFLAGS="-DLUA_COMPAT_5_3 $CFLAGS" \
+        MYLDFLAGS="$LDFLAGS" \
         SYSLIBS="" \
         liblua.a
 

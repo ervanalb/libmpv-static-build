@@ -56,24 +56,27 @@ _build_common() {
     WORK="$WORK_BASE/$PKGNAME-$PKGVER"
     OUTPUT_BASE="${TARGET_BASE}/output"
 
-    if [[ "$OS" == "WINDOWS" ]]; then
-        GCC_LIBDIR="$($TARGET_ARCH-g++ -print-file-name=libgcc.a | xargs dirname)"
-        GCC_INCLUDE_CXX="$GCC_LIBDIR/include/c++"
-        GCC_INCLUDE_CXX_TARGET="$GCC_LIBDIR/include/c++/$TARGET_ARCH"
-        GCC_INCLUDE_CXX_BACKWARD="$GCC_LIBDIR/include/c++/backward"
+    case "$OS" in
+        "WINDOWS")
+            GCC_LIBDIR="$($TARGET_ARCH-g++ -print-file-name=libgcc.a | xargs dirname)"
+            GCC_INCLUDE_CXX="$GCC_LIBDIR/include/c++"
+            GCC_INCLUDE_CXX_TARGET="$GCC_LIBDIR/include/c++/$TARGET_ARCH"
+            GCC_INCLUDE_CXX_BACKWARD="$GCC_LIBDIR/include/c++/backward"
 
-        BASE_CFLAGS="-pthread -I$OUTPUT_BASE/include"
-        BASE_CXXFLAGS="-pthread -isystem $GCC_INCLUDE_CXX -isystem $GCC_INCLUDE_CXX_TARGET -isystem $GCC_INCLUDE_CXX_BACKWARD -I$OUTPUT_BASE/include"
-        BASE_LDFLAGS="-L/usr/$TARGET_ARCH/lib"
-        PKG_CONFIG_PATH="$OUTPUT_BASE/lib/pkgconfig"
-    else
-        BASE_CFLAGS="-I$OUTPUT_BASE/include"
-        BASE_CXXFLAGS="-I$OUTPUT_BASE/include"
-        BASE_LDFLAGS=""
-        # On Linux, append system PKG_CONFIG_PATH to allow finding system libraries
-        SYSTEM_PKG_CONFIG_PATH=$(pkg-config --variable pc_path pkg-config)
-        PKG_CONFIG_PATH="$OUTPUT_BASE/lib/pkgconfig:${SYSTEM_PKG_CONFIG_PATH}"
-    fi
+            BASE_CFLAGS="-target $TARGET_ARCH -pthread -I$OUTPUT_BASE/include"
+            BASE_CXXFLAGS="-target $TARGET_ARCH -pthread -isystem $GCC_INCLUDE_CXX -isystem $GCC_INCLUDE_CXX_TARGET -isystem $GCC_INCLUDE_CXX_BACKWARD -I$OUTPUT_BASE/include"
+            BASE_LDFLAGS="-target $TARGET_ARCH -L/usr/$TARGET_ARCH/lib"
+            PKG_CONFIG_PATH="$OUTPUT_BASE/lib/pkgconfig"
+            ;;
+        "LINUX")
+            BASE_CFLAGS="-I$OUTPUT_BASE/include"
+            BASE_CXXFLAGS="-I$OUTPUT_BASE/include"
+            BASE_LDFLAGS=""
+            # On Linux, append system PKG_CONFIG_PATH to allow finding system libraries
+            SYSTEM_PKG_CONFIG_PATH=$(pkg-config --variable pc_path pkg-config)
+            PKG_CONFIG_PATH="$OUTPUT_BASE/lib/pkgconfig:${SYSTEM_PKG_CONFIG_PATH}"
+            ;;
+    esac
 }
 
 fetch_url() {
