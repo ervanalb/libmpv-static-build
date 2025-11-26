@@ -27,6 +27,21 @@ build() {
     mkdir -p "$OUTPUT_BASE/lib"
 	cp -f libbz2.a $OUTPUT_BASE/lib
 	chmod a+r $OUTPUT_BASE/lib/libbz2.a
+
+    # Create pkg-config file
+    mkdir -p "$OUTPUT_BASE/lib/pkgconfig"
+    cat > "$OUTPUT_BASE/lib/pkgconfig/bzip2.pc" <<EOF
+prefix=$OUTPUT_BASE
+exec_prefix=\${prefix}
+libdir=\${exec_prefix}/lib
+includedir=\${prefix}/include
+
+Name: bzip2
+Description: A high-quality data compressor
+Version: $PKGVER
+Libs: -L\${libdir} -lbz2
+Cflags: -I\${includedir}
+EOF
 }
 
 run "$@"

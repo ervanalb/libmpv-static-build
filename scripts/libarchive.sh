@@ -16,7 +16,7 @@ build() {
     setup_output;
 
     cd "$WORK"
-    generate_cmake_toolchain_file;
+    generate_cmake_toolchain_file
 
     mkdir builddir
     cd builddir
@@ -41,6 +41,7 @@ build() {
         -DENABLE_CPIO=OFF
         -DENABLE_CAT=OFF
         -DENABLE_TAR=OFF
+        -DENABLE_UNZIP=OFF
         -DENABLE_WERROR=OFF
         -DBUILD_TESTING=OFF
         -DENABLE_TEST=OFF
@@ -50,10 +51,6 @@ build() {
 
     case "$OS" in
         "LINUX")
-            # For Linux static linking, manually add OpenSSL's compression dependencies
-            # CMake's FindOpenSSL doesn't handle transitive deps from libcrypto.pc
-            # Need to add both brotli AND zstd here because of link order issues
-            CMAKE_OPTS+=("-DCMAKE_EXE_LINKER_FLAGS=-Wl,--start-group -lbrotlienc -lbrotlidec -lbrotlicommon -lzstd -lm -ldl -pthread -Wl,--end-group")
             ;;
         "WINDOWS")
             CMAKE_OPTS+=(

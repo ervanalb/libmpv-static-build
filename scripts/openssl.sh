@@ -20,16 +20,28 @@ build() {
     generate_cross_env;
     . cross.env
 
-    MINGW=""
-    if [[ "$OS" == "WINDOWS" ]]; then
-        MINGW="mingw64"
-    fi
+    # Set OpenSSL target based on our target architecture
+    case "$TARGET" in
+        "x86_64-unknown-linux-gnu")
+            OPENSSL_TARGET="linux-x86_64"
+            ;;
+        "aarch64-unknown-linux-gnu")
+            OPENSSL_TARGET="linux-aarch64"
+            ;;
+        "x86_64-pc-windows-gnu")
+            OPENSSL_TARGET="mingw64"
+            ;;
+        *)
+            echo "ERROR: Unknown target for OpenSSL: $TARGET" >&2
+            exit 1
+            ;;
+    esac
 
     ./Configure \
         --prefix=${OUTPUT_BASE} \
         --libdir=lib \
         --release \
-        $MINGW \
+        $OPENSSL_TARGET \
         no-autoload-config \
         -I${OUTPUT_BASE}/include \
         no-ssl3-method \

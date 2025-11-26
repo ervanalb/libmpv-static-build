@@ -32,18 +32,20 @@ build() {
         "WINDOWS")
             FFMPEG_TARGET_OS="mingw32"
             FFMPEG_EXTRA_LIBS=" -pthread -lwinmm -lavrt -latomic -lole32 -lshell32 -luuid -lstdc++"
-            FFMPEG_PLATFORM_OPTS="--enable-cross-compile --windres=x86_64-w64-mingw32-windres"
+            FFMPEG_PLATFORM_OPTS="--windres=x86_64-w64-mingw32-windres"
             ;;
     esac
 
     ./configure \
         --prefix=${OUTPUT_BASE} \
-        --arch=x86_64 \
+        --arch=$TARGET_CPU_FAMILY \
         --target-os=$FFMPEG_TARGET_OS \
+        --enable-cross-compile \
         --cc="$CC" \
         --cxx="$CXX" \
         --ar="$AR" \
         --ranlib="$RANLIB" \
+        --strip="$STRIP" \
         --pkg-config-flags=--static \
         $FFMPEG_PLATFORM_OPTS \
         --enable-static \
@@ -87,11 +89,12 @@ build() {
         --disable-doc \
         --disable-ffplay \
         --disable-ffprobe \
+        --disable-sdl2 \
         --enable-vaapi \
         --disable-vdpau \
         --disable-videotoolbox \
         --extra-cflags='-Wno-error=int-conversion -DAL_LIBTYPE_STATIC' \
-        --extra-ldflags="-Wl,--allow-multiple-definition -L${OUTPUT_BASE}/lib" \
+        --extra-ldflags="-Wl,--allow-multiple-definition -L${OUTPUT_BASE}/lib -Wl,-rpath-link,${OUTPUT_BASE}/lib" \
         --extra-libs="$FFMPEG_EXTRA_LIBS"
 
     make

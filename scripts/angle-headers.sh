@@ -11,18 +11,28 @@ download() {
     GIT_CLONE_FLAGS=(--sparse --no-checkout --filter=tree:0)
     fetch_git "https://github.com/google/angle.git"
     cd "$FETCH"
-    git sparse-checkout set --no-cone include/EGL include/KHR
+    git sparse-checkout set --no-cone include/EGL include/KHR include/GLES2 include/GLES3
     git checkout -q "$GIT_COMMIT"
     create_tarball
 }
 
 build() {
+    # Skip on Linux
+    case "$OS" in
+        "LINUX")
+            echo "Skipping ANGLE headers on Linux"
+            return 0
+            ;;
+    esac
+
     extract
     setup_output
 
     mkdir -p "$OUTPUT_BASE/include"
     cp -r "$WORK/include/EGL" "$OUTPUT_BASE/include/EGL"
     cp -r "$WORK/include/KHR" "$OUTPUT_BASE/include/KHR"
+    cp -r "$WORK/include/GLES2" "$OUTPUT_BASE/include/GLES2"
+    cp -r "$WORK/include/GLES3" "$OUTPUT_BASE/include/GLES3"
 }
 
 run "$@"

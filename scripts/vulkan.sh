@@ -12,16 +12,6 @@ download() {
 }
 
 build() {
-    # Skip Vulkan on Linux - use system libvulkan dynamically instead
-    case "$OS" in
-        "LINUX")
-            echo "Skipping Vulkan on Linux (use system library)"
-            return 0
-            ;;
-        "WINDOWS")
-            ;;
-    esac
-
     extract
     setup_output
 

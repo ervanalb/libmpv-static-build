@@ -27,6 +27,9 @@ build() {
         "x86_64-unknown-linux-gnu")
             VPX_TARGET="x86_64-linux-gcc"
             ;;
+        "aarch64-unknown-linux-gnu")
+            VPX_TARGET="arm64-linux-gcc"
+            ;;
     esac
 
     ./configure \

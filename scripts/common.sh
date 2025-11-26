@@ -20,8 +20,14 @@ run() {
             case "${TARGET:-}" in
               "x86_64-unknown-linux-gnu")
                 TARGET_CPU_FAMILY="x86_64"
-                TARGET_ARCH="x86_64-unknown-linux-gnu"
+                TARGET_ARCH="x86_64-linux-gnu"
                 TOOLCHAIN_PREFIX=""
+                OS="LINUX"
+                ;;
+              "aarch64-unknown-linux-gnu")
+                TARGET_CPU_FAMILY="aarch64"
+                TARGET_ARCH="aarch64-linux-gnu"
+                TOOLCHAIN_PREFIX="$TARGET_ARCH-"
                 OS="LINUX"
                 ;;
               "x86_64-pc-windows-gnu")
@@ -33,6 +39,7 @@ run() {
               *)
                 echo "ERROR: Bad TARGET variable. Available targets:" >&2
                 echo "  * x86_64-unknown-linux-gnu" >&2
+                echo "  * aarch64-unknown-linux-gnu" >&2
                 echo "  * x86_64-pc-windows-gnu" >&2
                 exit 1
                 ;;
@@ -56,6 +63,12 @@ _build_common() {
     WORK="$WORK_BASE/$PKGNAME-$PKGVER"
     OUTPUT_BASE="${TARGET_BASE}/output"
 
+    BASE_CFLAGS="-target $TARGET_ARCH -I$OUTPUT_BASE/include"
+    BASE_CXXFLAGS="-target $TARGET_ARCH -I$OUTPUT_BASE/include"
+    BASE_ASFLAGS="-target $TARGET_ARCH"
+    BASE_LDFLAGS="-target $TARGET_ARCH"
+    PKG_CONFIG_PATH="$OUTPUT_BASE/lib/pkgconfig"
+
     case "$OS" in
         "WINDOWS")
             GCC_LIBDIR="$($TARGET_ARCH-g++ -print-file-name=libgcc.a | xargs dirname)"
@@ -63,18 +76,15 @@ _build_common() {
             GCC_INCLUDE_CXX_TARGET="$GCC_LIBDIR/include/c++/$TARGET_ARCH"
             GCC_INCLUDE_CXX_BACKWARD="$GCC_LIBDIR/include/c++/backward"
 
-            BASE_CFLAGS="-target $TARGET_ARCH -pthread -I$OUTPUT_BASE/include"
-            BASE_CXXFLAGS="-target $TARGET_ARCH -pthread -isystem $GCC_INCLUDE_CXX -isystem $GCC_INCLUDE_CXX_TARGET -isystem $GCC_INCLUDE_CXX_BACKWARD -I$OUTPUT_BASE/include"
-            BASE_LDFLAGS="-target $TARGET_ARCH -L/usr/$TARGET_ARCH/lib"
-            PKG_CONFIG_PATH="$OUTPUT_BASE/lib/pkgconfig"
+            BASE_CFLAGS="$BASE_CFLAGS -pthread"
+            BASE_CXXFLAGS="$BASE_CXXFLAGS -pthread -isystem $GCC_INCLUDE_CXX -isystem $GCC_INCLUDE_CXX_TARGET -isystem $GCC_INCLUDE_CXX_BACKWARD"
+            BASE_LDFLAGS="$BASE_LDFLAGS -L/usr/$TARGET_ARCH/lib"
             ;;
         "LINUX")
-            BASE_CFLAGS="-I$OUTPUT_BASE/include"
-            BASE_CXXFLAGS="-I$OUTPUT_BASE/include"
-            BASE_LDFLAGS=""
-            # On Linux, append system PKG_CONFIG_PATH to allow finding system libraries
-            SYSTEM_PKG_CONFIG_PATH=$(pkg-config --variable pc_path pkg-config)
-            PKG_CONFIG_PATH="$OUTPUT_BASE/lib/pkgconfig:${SYSTEM_PKG_CONFIG_PATH}"
+            ;;
+        *)
+            echo "Unhandled OS: $OS" >&2
+            exit 1
             ;;
     esac
 }
@@ -152,10 +162,12 @@ _format_meson_array() {
 generate_meson_cross() {
     CFLAGS="$BASE_CFLAGS${CFLAGS:+ $CFLAGS}"
     CXXFLAGS="$BASE_CXXFLAGS${CXXFLAGS:+ $CXXFLAGS}"
+    ASFLAGS="$BASE_ASFLAGS${ASFLAGS:+ $ASFLAGS}"
     LDFLAGS="$BASE_LDFLAGS${LDFLAGS:+ $LDFLAGS}"
 
     CFLAGS_ARRAY=($CFLAGS)
     CXXFLAGS_ARRAY=($CXXFLAGS)
+    # XXX ASFLAGS ignored in meson!
     LDFLAGS_ARRAY=($LDFLAGS)
 
     CFLAGS_MESON=$(_format_meson_array "${CFLAGS_ARRAY[@]}")
@@ -204,6 +216,7 @@ EOF
 generate_cmake_toolchain_file() {
     CFLAGS="$BASE_CFLAGS${CFLAGS:+ $CFLAGS}"
     CXXFLAGS="$BASE_CXXFLAGS${CXXFLAGS:+ $CXXFLAGS}"
+    ASFLAGS="$BASE_ASFLAGS${ASFLAGS:+ $ASFLAGS}"
     LDFLAGS="$BASE_LDFLAGS${LDFLAGS:+ $LDFLAGS}"
 
     case "$OS" in
@@ -226,10 +239,11 @@ SET(CMAKE_CXX_COMPILER clang++)
 SET(CMAKE_C_COMPILER_TARGET $TARGET_ARCH)
 SET(CMAKE_CXX_COMPILER_TARGET $TARGET_ARCH)
 ${WINDRES}
-SET(CMAKE_ASM_COMPILER clang)
+#SET(CMAKE_ASM_COMPILER ${TOOLCHAIN_PREFIX}gcc) # REQUIRED? 
 
 SET(CMAKE_C_FLAGS_INIT "$CFLAGS")
 SET(CMAKE_CXX_FLAGS_INIT "$CXXFLAGS")
+SET(CMAKE_ASM_FLAGS_INIT "$ASFLAGS")
 SET(CMAKE_EXE_LINKER_FLAGS_INIT "$LDFLAGS")
 SET(CMAKE_SHARED_LINKER_FLAGS_INIT "$LDFLAGS")
 SET(CMAKE_MODULE_LINKER_FLAGS_INIT "$LDFLAGS")
@@ -249,6 +263,7 @@ EOF
 generate_cross_env() {
     CFLAGS="$BASE_CFLAGS${CFLAGS:+ $CFLAGS}"
     CXXFLAGS="$BASE_CXXFLAGS${CXXFLAGS:+ $CXXFLAGS}"
+    ASFLAGS="$BASE_ASFLAGS${ASFLAGS:+ $ASFLAGS}"
     LDFLAGS="$BASE_LDFLAGS${LDFLAGS:+ $LDFLAGS}"
 
     cat <<EOF > cross.env
@@ -258,9 +273,11 @@ export CXX="clang++"
 
 export CFLAGS="$CFLAGS"
 export CXXFLAGS="$CXXFLAGS"
+export ASFLAGS="$ASFLAGS"
 export LDFLAGS="$LDFLAGS"
 export AR=${TOOLCHAIN_PREFIX}ar
 export RANLIB=${TOOLCHAIN_PREFIX}ranlib
+export STRIP=${TOOLCHAIN_PREFIX}strip
 export PKG_CONFIG=pkg-config
 export PREFIX=$OUTPUT_BASE
 export PKG_CONFIG_PATH=$PKG_CONFIG_PATH

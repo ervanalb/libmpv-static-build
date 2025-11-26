@@ -20,13 +20,35 @@ build() {
     generate_cross_env
     . cross.env
 
-    ./configure \
-        --host=${TARGET_ARCH} \
-        --prefix=${OUTPUT_BASE} \
-        --disable-shared \
-        --enable-static \
-        --disable-binaries \
-        --enable-sse
+    # Set cache variables for cross-compilation type sizes
+    export ac_cv_sizeof_short=2
+    export ac_cv_sizeof_int=4
+    export ac_cv_sizeof_long=8
+    export ac_cv_sizeof_int16_t=2
+    export ac_cv_sizeof_uint16_t=2
+    export ac_cv_sizeof_u_int16_t=2
+    export ac_cv_sizeof_int32_t=4
+    export ac_cv_sizeof_uint32_t=4
+    export ac_cv_sizeof_u_int32_t=4
+
+    CONFIGURE_OPTS=(
+        --host=${TARGET_ARCH}
+        --prefix=${OUTPUT_BASE}
+        --disable-shared
+        --enable-static
+        --disable-binaries
+    )
+
+    # SSE is x86-specific
+    case "$TARGET_CPU_FAMILY" in
+        "x86_64")
+            CONFIGURE_OPTS+=(--enable-sse)
+            ;;
+        *)
+            ;;
+    esac
+
+    ./configure "${CONFIGURE_OPTS[@]}"
 
     make
     make install
