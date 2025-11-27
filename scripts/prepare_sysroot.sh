@@ -20,6 +20,7 @@ ALL_SCRIPTS=(
     libxrender.sh
     libxrandr.sh
     mesa.sh
+    alsa.sh
 )
 
 download() {
