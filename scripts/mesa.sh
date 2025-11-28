@@ -26,6 +26,9 @@ build() {
 
     cd "$WORK"
 
+    # Statically link zlib into the shared library
+    LDFLAGS="-L${OUTPUT_BASE}/lib -Wl,-Bstatic -lz -Wl,-Bdynamic"
+
     generate_meson_cross
 
     meson setup build \
