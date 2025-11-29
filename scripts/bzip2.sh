@@ -3,12 +3,12 @@ set -euo pipefail
 
 PKGNAME="bzip2"
 PKGVER="1.0.8"
-SOURCE_ARCHIVE_SHA256="ab5a03176ee106d3f0fa90e381da478ddae405918153cca248e682cd0c4a2269"
+SOURCE_ARCHIVE_SHA256="db106b740252669664fd8f3a1c69fe7f689d5cd4b132f82ba82b9afba27627df"
 
 source "$(dirname "$0")/common.sh"
 
 download() {
-    fetch_url "https://sourceware.org/pub/bzip2/${SOURCE_ARCHIVE}"
+    fetch_url "https://github.com/libarchive/bzip2/archive/refs/tags/${PKGNAME}-${PKGVER}.tar.gz"
 }
 
 build() {
