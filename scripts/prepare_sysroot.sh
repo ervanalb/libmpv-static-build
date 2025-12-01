@@ -8,6 +8,7 @@ set -euo pipefail
 SCRIPTS_DIR="$(dirname "$0")"
 
 ALL_SCRIPTS=(
+    zlib.sh
     xorg-macros.sh
     xcb-proto.sh
     xorgproto.sh

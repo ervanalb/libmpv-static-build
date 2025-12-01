@@ -6,7 +6,6 @@ SCRIPTS_DIR="$(dirname "$0")"
 ALL_SCRIPTS=(
     zstd.sh
     xz.sh
-    zlib.sh
     brotli.sh
     bzip2.sh
     expat.sh
