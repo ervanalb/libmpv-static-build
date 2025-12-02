@@ -37,6 +37,11 @@ build() {
 
     make
     make install
+
+    # Rename conflicting dec_init symbol to avoid duplicate symbol errors with ffmpeg
+    # This symbol conflicts with ffmpeg's fftools/ffmpeg_dec.o
+    # Use --redefine-sym to rename it to bd_dec_init
+    ${TOOLCHAIN_PREFIX}objcopy --redefine-sym dec_init=bd_dec_init "${OUTPUT_BASE}/lib/libbluray.a"
 }
 
 run "$@"

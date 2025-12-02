@@ -25,7 +25,7 @@ build() {
             FFMPEG_TARGET_OS="linux"
             FFMPEG_EXTRA_LIBS="-lstdc++ -lpthread -latomic -lm"
             FFMPEG_PLATFORM_OPTS="--disable-xlib --enable-vaapi --disable-videotoolbox --enable-libvpl"
-            FFMPEG_EXTRA_LDFLAGS="-Wl,--allow-multiple-definition -L${OUTPUT_BASE}/lib -Wl,-rpath-link,${OUTPUT_BASE}/lib"
+            FFMPEG_EXTRA_LDFLAGS="-L${OUTPUT_BASE}/lib -Wl,-rpath-link,${OUTPUT_BASE}/lib"
 
             # Override PKG_CONFIG_PATH to prevent finding system libraries
             PKG_CONFIG_PATH=$PKG_CONFIG_LIBDIR
@@ -34,7 +34,7 @@ build() {
             FFMPEG_TARGET_OS="mingw32"
             FFMPEG_EXTRA_LIBS=" -pthread -lwinmm -lavrt -latomic -lole32 -lshell32 -luuid -lstdc++"
             FFMPEG_PLATFORM_OPTS="--windres=x86_64-w64-mingw32-windres --disable-vaapi --disable-videotoolbox --enable-libvpl"
-            FFMPEG_EXTRA_LDFLAGS="-Wl,--allow-multiple-definition -L${OUTPUT_BASE}/lib -Wl,-rpath-link,${OUTPUT_BASE}/lib"
+            FFMPEG_EXTRA_LDFLAGS="-L${OUTPUT_BASE}/lib -Wl,-rpath-link,${OUTPUT_BASE}/lib"
             ;;
         "MACOS")
             FFMPEG_TARGET_OS="darwin"
