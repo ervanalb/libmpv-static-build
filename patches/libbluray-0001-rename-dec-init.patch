@@ -1,0 +1,43 @@
+--- src/libbluray/disc/dec.h.orig	2025-12-02 18:39:08.103121173 -0500
++++ src/libbluray/disc/dec.h	2025-12-02 18:42:24.577263193 -0500
+@@ -45,10 +45,10 @@
+ 
+ typedef struct bd_dec BD_DEC;
+ 
+-BD_PRIVATE BD_DEC *dec_init(struct dec_dev *dev,
+-                            struct bd_enc_info *enc_info,
+-                            const char *keyfile_path,
+-                            void *regs, void *psr_read, void *psr_write);
++BD_PRIVATE BD_DEC *bd_dec_init(struct dec_dev *dev,
++                               struct bd_enc_info *enc_info,
++                               const char *keyfile_path,
++                               void *regs, void *psr_read, void *psr_write);
+ BD_PRIVATE void dec_close(BD_DEC **);
+ 
+ /* get decoder data */
+--- src/libbluray/disc/dec.c.orig	2025-12-02 18:39:08.104440073 -0500
++++ src/libbluray/disc/dec.c	2025-12-02 18:42:35.773410277 -0500
+@@ -284,9 +284,9 @@
+  *
+  */
+ 
+-BD_DEC *dec_init(struct dec_dev *dev, BD_ENC_INFO *enc_info,
+-                 const char *keyfile_path,
+-                 void *regs, void *psr_read, void *psr_write)
++BD_DEC *bd_dec_init(struct dec_dev *dev, BD_ENC_INFO *enc_info,
++                    const char *keyfile_path,
++                    void *regs, void *psr_read, void *psr_write)
+ {
+     BD_DEC *dec = NULL;
+ 
+--- src/libbluray/disc/disc.c.orig	2025-12-02 18:39:08.105990414 -0500
++++ src/libbluray/disc/disc.c	2025-12-02 18:42:45.476537748 -0500
+@@ -348,7 +348,7 @@
+     }
+ 
+     struct dec_dev dev = { p->fs_handle, p->pf_file_open_bdrom, p, (file_openFp)disc_open_path, p->disc_root, device_path };
+-    p->dec = dec_init(&dev, enc_info, keyfile_path, regs, psr_read, psr_write);
++    p->dec = bd_dec_init(&dev, enc_info, keyfile_path, regs, psr_read, psr_write);
+ 
+     return p;
+ }
