@@ -148,6 +148,15 @@ sha256sum_check() {
     fi
 }
 
+get_cpu_count() {
+    # Get number of CPU cores: Linux uses nproc, macOS uses sysctl
+    if [[ "$HOST_OS" == "Darwin" ]]; then
+        sysctl -n hw.ncpu
+    else
+        nproc
+    fi
+}
+
 verify() {
     echo "$SOURCE_ARCHIVE_SHA256  $DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified" | sha256sum_check \
         || { echo "Error: checksum failed for $SOURCE_ARCHIVE" >&2; exit 1; }
@@ -312,7 +321,7 @@ generate_cross_env() {
     LDFLAGS="$BASE_LDFLAGS${LDFLAGS:+ $LDFLAGS}"
 
     cat <<EOF > cross.env
-export MAKEFLAGS="-j $(nproc)"
+export MAKEFLAGS="-j $(get_cpu_count)"
 export CC="clang"
 export CXX="clang++"
 
