@@ -37,6 +37,9 @@ build() {
         "WINDOWS")
             WSI_OPTIONS=""
             ;;
+        "MACOS")
+            WSI_OPTIONS="-DBUILD_WSI_XCB_SUPPORT=OFF -DBUILD_WSI_XLIB_SUPPORT=OFF -DBUILD_WSI_WAYLAND_SUPPORT=OFF"
+            ;;
     esac
 
     cmake .. \
@@ -62,6 +65,10 @@ build() {
             ;;
         "LINUX")
             # On Linux, static loader doesn't build, use shared library
+            ninja install
+            ;;
+        "MACOS")
+            # On macOS, use shared library like Linux
             ninja install
             ;;
     esac

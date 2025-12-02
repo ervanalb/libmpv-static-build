@@ -33,6 +33,9 @@ build() {
         "WINDOWS")
             PLATFORM_OPTS="-Dshaderc=enabled -Dspirv-cross=enabled -Degl-angle=enabled"
             ;;
+        "MACOS")
+            PLATFORM_OPTS="-Dshaderc=disabled -Dspirv-cross=disabled -Degl-angle=disabled"
+            ;;
     esac
 
     # Configure mpv with LGPL-compatible options only

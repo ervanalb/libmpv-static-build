@@ -26,6 +26,10 @@ build() {
             CFLAGS="-femulated-tls"
             CXXFLAGS="-femulated-tls"
             ;;
+        "MACOS")
+            CFLAGS=""
+            CXXFLAGS=""
+            ;;
     esac
     generate_cmake_toolchain_file
 

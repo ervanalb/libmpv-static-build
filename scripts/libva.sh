@@ -12,6 +12,12 @@ download() {
 }
 
 build() {
+    # Linux-only
+    if [[ "$OS" != "LINUX" ]]; then
+        echo "Skipping libva (Linux-only)"
+        return 0
+    fi
+
     extract
     setup_output
 

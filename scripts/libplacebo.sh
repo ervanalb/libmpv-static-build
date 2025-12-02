@@ -72,6 +72,9 @@ build() {
         "WINDOWS")
             D3D11_OPT="-Dd3d11=enabled"
             ;;
+        "MACOS")
+            D3D11_OPT="-Dd3d11=disabled"
+            ;;
     esac
 
     meson setup build \
@@ -98,6 +101,10 @@ build() {
         "WINDOWS")
             PL_HAS_D3D11=1
             PL_LIBS="-L\${libdir} -lplacebo -lshlwapi -lversion"
+            ;;
+        "MACOS")
+            PL_HAS_D3D11=0
+            PL_LIBS="-L\${libdir} -lplacebo"
             ;;
     esac
 

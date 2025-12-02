@@ -26,6 +26,9 @@ build() {
         "LINUX")
             DIRECTWRITE_OPT="disabled"
             ;;
+        "MACOS")
+            DIRECTWRITE_OPT="disabled"
+            ;;
     esac
 
     meson setup builddir \
@@ -53,6 +56,9 @@ build() {
             LIBS_LINE="-L\${libdir} -lass -lgdi32"
             ;;
         "LINUX")
+            LIBS_LINE="-L\${libdir} -lass"
+            ;;
+        "MACOS")
             LIBS_LINE="-L\${libdir} -lass"
             ;;
     esac

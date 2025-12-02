@@ -65,6 +65,8 @@ build() {
                 -DHAVE_PIPE=0
             )
             ;;
+        "MACOS")
+            ;;
     esac
 
     cmake .. "${CMAKE_OPTS[@]}"
