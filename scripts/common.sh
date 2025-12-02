@@ -130,7 +130,13 @@ fetch_git() {
 }
 
 create_tarball() {
-    tar -zcf "$DOWNLOADS_BASE/$SOURCE_ARCHIVE" --exclude .git --transform="s,^,$PKGNAME-$PKGVER/," .
+    if [[ "$HOST_OS" == "Darwin" ]]; then
+        # BSD tar (macOS) doesn't support --transform, use -s instead
+        tar -zcf "$DOWNLOADS_BASE/$SOURCE_ARCHIVE" --exclude .git -s ",^,$PKGNAME-$PKGVER/," .
+    else
+        # GNU tar (Linux) uses --transform
+        tar -zcf "$DOWNLOADS_BASE/$SOURCE_ARCHIVE" --exclude .git --transform="s,^,$PKGNAME-$PKGVER/," .
+    fi
 }
 
 _sha256sum_check() {
