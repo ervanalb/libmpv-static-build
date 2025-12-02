@@ -12,6 +12,12 @@ download() {
 }
 
 build() {
+    # Intel VPL is not available on macOS
+    if [[ "$OS" == "MACOS" ]]; then
+        echo "Skipping libvpl (not available on macOS)"
+        return 0
+    fi
+
     extract
     setup_output
 
