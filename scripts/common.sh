@@ -177,12 +177,12 @@ setup_output() {
 
 meson_ninja_remove_invalid_linker_args() {
     BUILDDIR="${1:-.}"
-    sed -i 's/-Wl,--allow-shlib-undefined//g' "$BUILDDIR/build.ninja"
+    sed -i'' -e 's/-Wl,--allow-shlib-undefined//g' "$BUILDDIR/build.ninja"
 }
 
 patch_meson_iconv_dependency() {
     # Patch meson.build to use iconv_ instead of iconv to avoid built-in detection
-    sed -i "s/dependency('iconv'/dependency('iconv_'/g" meson.build
+    sed -i'' -e "s/dependency('iconv'/dependency('iconv_'/g" meson.build
 }
 
 _format_meson_array() {

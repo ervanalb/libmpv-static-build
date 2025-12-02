@@ -18,10 +18,10 @@ build() {
     cd "$WORK"
 
     # Update minimum CMake version (2.8 is too old for modern CMake)
-    sed -i 's/cmake_minimum_required(VERSION 2.8)/cmake_minimum_required(VERSION 3.5)/' CMakeLists.txt
+    sed -i'' -e 's/cmake_minimum_required(VERSION 2.8)/cmake_minimum_required(VERSION 3.5)/' CMakeLists.txt
 
     # Remove the tools subdirectory build (we don't need the executable)
-    sed -i 's/^add_subdirectory(tools)/#add_subdirectory(tools)/' src/CMakeLists.txt
+    sed -i'' -e 's/^add_subdirectory(tools)/#add_subdirectory(tools)/' src/CMakeLists.txt
 
     generate_cmake_toolchain_file
 

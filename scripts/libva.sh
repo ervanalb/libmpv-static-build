@@ -18,7 +18,7 @@ build() {
     cd "$WORK"
 
     # Patch to build as static library
-    sed -i "s/shared_library/library/g" va/meson.build
+    sed -i'' -e "s/shared_library/library/g" va/meson.build
 
     generate_meson_cross
 

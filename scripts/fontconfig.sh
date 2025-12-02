@@ -25,7 +25,7 @@ build() {
     fi
 
     # Modify src/meson.build to use static library only
-    sed -i "s/both_libraries/library/g" src/meson.build
+    sed -i'' -e "s/both_libraries/library/g" src/meson.build
 
     generate_meson_cross
 
