@@ -18,7 +18,7 @@ download() {
     wget -q "$ZIMG_URL" -O "$FETCH/zimg-${PKGVER}.tar.gz"
 
     # Verify zimg checksum
-    echo "$ZIMG_SHA256 $FETCH/zimg-${PKGVER}.tar.gz" | sha256sum --check --status \
+    echo "$ZIMG_SHA256  $FETCH/zimg-${PKGVER}.tar.gz" | sha256sum_check \
         || { echo "Error: checksum failed for zimg-${PKGVER}.tar.gz" >&2; exit 1; }
 
     # Download graphengine to FETCH folder
@@ -34,7 +34,11 @@ download() {
 
     # Create combined tarball in downloads folder
     cd "$FETCH/zimg-temp"
-    tar -zcf "$DOWNLOADS_BASE/$SOURCE_ARCHIVE" --transform="s,^,$PKGNAME-$PKGVER/," .
+    if [[ "$HOST_OS" == "Darwin" ]]; then
+        tar -zcf "$DOWNLOADS_BASE/$SOURCE_ARCHIVE" -s ",^,$PKGNAME-$PKGVER/," .
+    else
+        tar -zcf "$DOWNLOADS_BASE/$SOURCE_ARCHIVE" --transform="s,^,$PKGNAME-$PKGVER/," .
+    fi
 }
 
 build() {

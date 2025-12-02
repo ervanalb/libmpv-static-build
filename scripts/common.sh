@@ -139,7 +139,7 @@ create_tarball() {
     fi
 }
 
-_sha256sum_check() {
+sha256sum_check() {
     # Use appropriate SHA256 command: Linux uses sha256sum, macOS uses shasum
     if [[ "$HOST_OS" == "Darwin" ]]; then
         shasum -a 256 --check --status
@@ -149,13 +149,13 @@ _sha256sum_check() {
 }
 
 verify() {
-    echo "$SOURCE_ARCHIVE_SHA256  $DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified" | _sha256sum_check \
+    echo "$SOURCE_ARCHIVE_SHA256  $DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified" | sha256sum_check \
         || { echo "Error: checksum failed for $SOURCE_ARCHIVE" >&2; exit 1; }
     mv "$DOWNLOADS_BASE/$SOURCE_ARCHIVE-unverified" "$DOWNLOADS_BASE/$SOURCE_ARCHIVE"
 }
 
 already_downloaded() {
-    echo "$SOURCE_ARCHIVE_SHA256  $DOWNLOADS_BASE/$SOURCE_ARCHIVE" | _sha256sum_check 2>/dev/null
+    echo "$SOURCE_ARCHIVE_SHA256  $DOWNLOADS_BASE/$SOURCE_ARCHIVE" | sha256sum_check 2>/dev/null
     RC=$?
     if [ $RC -eq 0 ]; then
         echo "$PKGNAME already downloaded"

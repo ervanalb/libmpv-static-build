@@ -23,19 +23,19 @@ download() {
 
     # Download libplacebo
     wget -q "$LIBPLACEBO_URL" -O "libplacebo-${PKGVER}.tar.gz-unverified"
-    echo "$LIBPLACEBO_SHA256 libplacebo-${PKGVER}.tar.gz-unverified" | sha256sum --check --status \
+    echo "$LIBPLACEBO_SHA256  libplacebo-${PKGVER}.tar.gz-unverified" | sha256sum_check \
         || { echo "Error: checksum failed for libplacebo-${PKGVER}.tar.gz" >&2; exit 1; }
     mv "libplacebo-${PKGVER}.tar.gz-unverified" "libplacebo-${PKGVER}.tar.gz"
 
     # Download glad
     wget -q "$GLAD_URL" -O "glad-${GLAD_VER}.tar.gz-unverified"
-    echo "$GLAD_SHA256 glad-${GLAD_VER}.tar.gz-unverified" | sha256sum --check --status \
+    echo "$GLAD_SHA256  glad-${GLAD_VER}.tar.gz-unverified" | sha256sum_check \
         || { echo "Error: checksum failed for glad-${GLAD_VER}.tar.gz" >&2; exit 1; }
     mv "glad-${GLAD_VER}.tar.gz-unverified" "glad-${GLAD_VER}.tar.gz"
 
     # Download fast_float
     wget -q "$FAST_FLOAT_URL" -O "fast_float-${FAST_FLOAT_VER}.tar.gz-unverified"
-    echo "$FAST_FLOAT_SHA256 fast_float-${FAST_FLOAT_VER}.tar.gz-unverified" | sha256sum --check --status \
+    echo "$FAST_FLOAT_SHA256  fast_float-${FAST_FLOAT_VER}.tar.gz-unverified" | sha256sum_check \
         || { echo "Error: checksum failed for fast_float-${FAST_FLOAT_VER}.tar.gz" >&2; exit 1; }
     mv "fast_float-${FAST_FLOAT_VER}.tar.gz-unverified" "fast_float-${FAST_FLOAT_VER}.tar.gz"
 
