@@ -31,6 +31,12 @@ build() {
         "x86_64-pc-windows-gnu")
             OPENSSL_TARGET="mingw64"
             ;;
+        "x86_64-apple-darwin")
+            OPENSSL_TARGET="darwin64-x86_64-cc"
+            ;;
+        "aarch64-apple-darwin")
+            OPENSSL_TARGET="darwin64-arm64-cc"
+            ;;
         *)
             echo "ERROR: Unknown target for OpenSSL: $TARGET" >&2
             exit 1
