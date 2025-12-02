@@ -12,13 +12,11 @@ download() {
 }
 
 build() {
-    # Skip on Windows
-    case "$OS" in
-        "WINDOWS")
-            echo "Skipping xcb-proto on Windows"
-            return 0
-            ;;
-    esac
+    # Linux-only
+    if [[ "$OS" != "LINUX" ]]; then
+        echo "Skipping xcb-proto (Linux-only)"
+        return 0
+    fi
 
     extract
     setup_output

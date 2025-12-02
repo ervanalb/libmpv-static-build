@@ -17,13 +17,11 @@ download() {
 }
 
 build() {
-    # Skip on Linux
-    case "$OS" in
-        "LINUX")
-            echo "Skipping ANGLE headers on Linux"
-            return 0
-            ;;
-    esac
+    # Windows-only
+    if [[ "$OS" != "WINDOWS" ]]; then
+        echo "Skipping ANGLE headers (Windows-only)"
+        return 0
+    fi
 
     extract
     setup_output

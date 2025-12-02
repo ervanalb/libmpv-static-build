@@ -13,13 +13,11 @@ download() {
 }
 
 build() {
-    # Skip on Windows - ALSA is Linux-only
-    case "$OS" in
-        "WINDOWS")
-            echo "Skipping alsa-lib on Windows (Linux-only)"
-            return 0
-            ;;
-    esac
+    # Linux-only
+    if [[ "$OS" != "LINUX" ]]; then
+        echo "Skipping alsa-lib (Linux-only)"
+        return 0
+    fi
 
     extract
     setup_output

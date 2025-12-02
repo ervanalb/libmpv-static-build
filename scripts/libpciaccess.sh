@@ -14,15 +14,11 @@ download() {
 }
 
 build() {
-    # Skip libpciaccess on Windows - only needed for Linux
-    case "$OS" in
-        "WINDOWS")
-            echo "Skipping libpciaccess on Windows (Linux only)"
-            return 0
-            ;;
-        "LINUX")
-            ;;
-    esac
+    # Linux-only
+    if [[ "$OS" != "LINUX" ]]; then
+        echo "Skipping libpciaccess (Linux-only)"
+        return 0
+    fi
 
     extract
     setup_output

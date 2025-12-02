@@ -30,6 +30,12 @@ build() {
         "aarch64-unknown-linux-gnu")
             VPX_TARGET="arm64-linux-gcc"
             ;;
+        "x86_64-apple-darwin")
+            VPX_TARGET="x86_64-darwin20-gcc"
+            ;;
+        "aarch64-apple-darwin")
+            VPX_TARGET="arm64-darwin20-gcc"
+            ;;
     esac
 
     ./configure \

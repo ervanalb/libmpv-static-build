@@ -24,7 +24,7 @@ build() {
         "LINUX")
             FFMPEG_TARGET_OS="linux"
             FFMPEG_EXTRA_LIBS="-lstdc++ -lpthread -latomic -lm"
-            FFMPEG_PLATFORM_OPTS="--disable-xlib"
+            FFMPEG_PLATFORM_OPTS="--disable-xlib --enable-vaapi --disable-videotoolbox"
 
             # Override PKG_CONFIG_PATH to prevent finding system libraries
             PKG_CONFIG_PATH=$PKG_CONFIG_LIBDIR
@@ -32,7 +32,12 @@ build() {
         "WINDOWS")
             FFMPEG_TARGET_OS="mingw32"
             FFMPEG_EXTRA_LIBS=" -pthread -lwinmm -lavrt -latomic -lole32 -lshell32 -luuid -lstdc++"
-            FFMPEG_PLATFORM_OPTS="--windres=x86_64-w64-mingw32-windres"
+            FFMPEG_PLATFORM_OPTS="--windres=x86_64-w64-mingw32-windres --disable-vaapi --disable-videotoolbox"
+            ;;
+        "MACOS")
+            FFMPEG_TARGET_OS="darwin"
+            FFMPEG_EXTRA_LIBS="-lstdc++ -lpthread -lm -framework CoreFoundation -framework CoreVideo -framework CoreMedia -framework VideoToolbox"
+            FFMPEG_PLATFORM_OPTS="--disable-vaapi --enable-videotoolbox"
             ;;
     esac
 
@@ -90,9 +95,7 @@ build() {
         --disable-ffplay \
         --disable-ffprobe \
         --disable-sdl2 \
-        --enable-vaapi \
         --disable-vdpau \
-        --disable-videotoolbox \
         --extra-cflags='-Wno-error=int-conversion -DAL_LIBTYPE_STATIC' \
         --extra-ldflags="-Wl,--allow-multiple-definition -L${OUTPUT_BASE}/lib -Wl,-rpath-link,${OUTPUT_BASE}/lib" \
         --extra-libs="$FFMPEG_EXTRA_LIBS"

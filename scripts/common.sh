@@ -36,11 +36,25 @@ run() {
                 TOOLCHAIN_PREFIX="$TARGET_ARCH-"
                 OS="WINDOWS"
                 ;;
+              "x86_64-apple-darwin")
+                TARGET_CPU_FAMILY="x86_64"
+                TARGET_ARCH="x86_64-apple-darwin"
+                TOOLCHAIN_PREFIX=""
+                OS="MACOS"
+                ;;
+              "aarch64-apple-darwin")
+                TARGET_CPU_FAMILY="aarch64"
+                TARGET_ARCH="aarch64-apple-darwin"
+                TOOLCHAIN_PREFIX=""
+                OS="MACOS"
+                ;;
               *)
                 echo "ERROR: Bad TARGET variable. Available targets:" >&2
                 echo "  * x86_64-unknown-linux-gnu" >&2
                 echo "  * aarch64-unknown-linux-gnu" >&2
                 echo "  * x86_64-pc-windows-gnu" >&2
+                echo "  * x86_64-apple-darwin" >&2
+                echo "  * aarch64-apple-darwin" >&2
                 exit 1
                 ;;
             esac
@@ -81,6 +95,13 @@ _build_common() {
             BASE_LDFLAGS="$BASE_LDFLAGS -L/usr/$TARGET_ARCH/lib"
             ;;
         "LINUX")
+            ;;
+        "MACOS")
+            # Use native macOS SDK
+            MACOS_SDK_PATH="${MACOS_SDK_PATH:-$(xcrun --show-sdk-path 2>/dev/null || echo "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")}"
+            BASE_CFLAGS="$BASE_CFLAGS -isysroot $MACOS_SDK_PATH"
+            BASE_CXXFLAGS="$BASE_CXXFLAGS -isysroot $MACOS_SDK_PATH"
+            BASE_LDFLAGS="$BASE_LDFLAGS -isysroot $MACOS_SDK_PATH"
             ;;
         *)
             echo "Unhandled OS: $OS" >&2
@@ -183,6 +204,10 @@ generate_meson_cross() {
             WINDRES=""
             MESON_SYSTEM="linux"
             ;;
+        "MACOS")
+            WINDRES=""
+            MESON_SYSTEM="darwin"
+            ;;
     esac
 
     cat <<EOF > meson_cross.txt
@@ -226,6 +251,10 @@ generate_cmake_toolchain_file() {
             ;;
         "LINUX")
             CMAKE_SYSTEM_NAME="Linux"
+            WINDRES=""
+            ;;
+        "MACOS")
+            CMAKE_SYSTEM_NAME="Darwin"
             WINDRES=""
             ;;
     esac
