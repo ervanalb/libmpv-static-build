@@ -19,8 +19,8 @@ build() {
 
     generate_cmake_toolchain_file
 
-    mkdir -p build
-    cd build
+    mkdir -p builddir
+    cd builddir
 
     cmake .. \
         -G Ninja \
