@@ -62,6 +62,9 @@ build() {
     # Apply Python 3.13 compatibility patch
     patch -p1 < ${PATCH_BASE}/libplacebo-0001-fix-python313-elementtree.patch
 
+    # Apply patch to remove vulkan stubs when vulkan is disabled
+    patch -p1 < ${PATCH_BASE}/libplacebo-0002-remove-vulkan-stubs.patch
+
     generate_meson_cross
 
     # D3D11 is Windows-only
@@ -83,10 +86,10 @@ build() {
         --cross-file=meson_cross.txt \
         --default-library=static \
         ${D3D11_OPT} \
+        -Dvulkan=disabled \
         -Ddebug=false \
         -Db_ndebug=true \
         -Doptimization=3 \
-        -Dvulkan-registry=${OUTPUT_BASE}/share/vulkan/registry/vk.xml \
         -Ddemos=false
 
     ninja -C build
@@ -122,13 +125,12 @@ pl_has_libdovi=0
 pl_has_opengl=1
 pl_has_shaderc=1
 pl_has_vk_proc_addr=1
-pl_has_vulkan=1
 pl_has_xxhash=1
 
 Name: libplacebo
 Description: Reusable library for GPU-accelerated video/image rendering
 Version: ${PKGVER}
-Requires: shaderc >= 2019.1, spirv-cross-c-shared >= 0.29.0, vulkan, lcms2 >= 2.9
+Requires: shaderc >= 2019.1, spirv-cross-c-shared >= 0.29.0, lcms2 >= 2.9
 Libs: ${PL_LIBS}
 Cflags: -I\${includedir} -DPL_STATIC
 EOF

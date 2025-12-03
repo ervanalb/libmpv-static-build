@@ -72,7 +72,7 @@ build() {
         -Dmacos-media-player=disabled \
         -Dmacos-touchbar=disabled \
         $PLATFORM_OPTS \
-        -Dvulkan=enabled \
+        -Dvulkan=disabled \
         -Dvapoursynth=disabled \
         -Dgl=enabled \
 

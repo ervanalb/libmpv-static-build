@@ -87,7 +87,6 @@ build() {
         --enable-libxml2 \
         --enable-libmysofa \
         --enable-libjxl \
-        --enable-libplacebo \
         --enable-libshaderc \
         --enable-libaribcaption \
         --enable-amf \

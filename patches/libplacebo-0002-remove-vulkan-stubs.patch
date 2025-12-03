@@ -1,0 +1,9 @@
+--- a/src/vulkan/meson.build
++++ b/src/vulkan/meson.build
+@@ -54,6 +54,4 @@
+     build_deps += vulkan_loader
+     tests += 'vulkan.c'
+   endif
+-else
+-  sources += 'vulkan/stubs.c'
+ endif
