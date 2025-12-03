@@ -239,6 +239,7 @@ generate_meson_cross() {
 [binaries]
 c = ['clang']
 cpp = ['clang++']
+objc = ['clang']
 ar = '${TOOLCHAIN_PREFIX}ar'
 ranlib = '${TOOLCHAIN_PREFIX}ranlib'
 strip = '${TOOLCHAIN_PREFIX}strip'
@@ -248,8 +249,10 @@ pkg-config = 'pkg-config'
 [built-in options]
 c_args = [$CFLAGS_MESON]
 cpp_args = [$CXXFLAGS_MESON]
+objc_args = [$CFLAGS_MESON]
 c_link_args = [$LDFLAGS_MESON]
 cpp_link_args = [$LDFLAGS_MESON]
+objc_link_args = [$LDFLAGS_MESON]
 
 [properties]
 pkg_config_libdir = '$OUTPUT_BASE/lib/pkgconfig'
