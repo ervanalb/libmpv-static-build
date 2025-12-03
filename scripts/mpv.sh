@@ -62,6 +62,7 @@ build() {
         -Drubberband=disabled \
         -Dlcms2=enabled \
         -Dopenal=enabled \
+        -Dswift-build=disabled \
         $PLATFORM_OPTS \
         -Dvulkan=enabled \
         -Dvapoursynth=disabled \
