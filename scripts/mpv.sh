@@ -63,6 +63,11 @@ build() {
         -Dlcms2=enabled \
         -Dopenal=enabled \
         -Dswift-build=disabled \
+        -Dcocoa=disabled \
+        -Dgl-cocoa=disabled \
+        -Dmacos-cocoa-cb=disabled \
+        -Dmacos-media-player=disabled \
+        -Dmacos-touchbar=disabled \
         $PLATFORM_OPTS \
         -Dvulkan=enabled \
         -Dvapoursynth=disabled \
