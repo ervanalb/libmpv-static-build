@@ -1,0 +1,12 @@
+--- meson.build.orig	2025-12-03 12:06:33.440449680 -0500
++++ meson.build	2025-12-03 12:07:01.520984971 -0500
+@@ -825,7 +825,8 @@
+ 
+ if features['audiounit'] or features['coreaudio'] or features['avfoundation']
+     sources += files('audio/out/ao_coreaudio_chmap.c',
+-                     'audio/out/ao_coreaudio_utils.c')
++                     'audio/out/ao_coreaudio_utils.c',
++                     'osdep/utils-mac.c')
+ endif
+ 
+ if features['avfoundation']

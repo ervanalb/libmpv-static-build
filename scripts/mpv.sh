@@ -20,6 +20,9 @@ build() {
     # Apply FFmpeg 8 compatibility patch
     patch -p1 < "$PATCH_BASE/mpv-0.40.0-ffmpeg8-compat.patch"
 
+    # Apply patch to include utils-mac.c for audio backends
+    patch -p1 < "$PATCH_BASE/mpv-0002-include-utils-mac-for-audio-backends.patch"
+
     # Patch meson.build to use iconv_ instead of iconv
     patch_meson_iconv_dependency
 
@@ -63,6 +66,8 @@ build() {
         -Dlcms2=enabled \
         -Dopenal=enabled \
         -Dswift-build=disabled \
+        -Dcocoa=disabled \
+        -Dgl-cocoa=disabled \
         -Dmacos-cocoa-cb=disabled \
         -Dmacos-media-player=disabled \
         -Dmacos-touchbar=disabled \
