@@ -100,9 +100,10 @@ _build_common() {
         "MACOS")
             # Use native macOS SDK
             MACOS_SDK_PATH="${MACOS_SDK_PATH:-$(xcrun --show-sdk-path 2>/dev/null || echo "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk")}"
-            BASE_CFLAGS="$BASE_CFLAGS -isysroot $MACOS_SDK_PATH"
-            BASE_CXXFLAGS="$BASE_CXXFLAGS -isysroot $MACOS_SDK_PATH"
-            BASE_LDFLAGS="$BASE_LDFLAGS -isysroot $MACOS_SDK_PATH"
+            MACOS_DEPLOYMENT_TARGET="${MACOS_DEPLOYMENT_TARGET:-11.0}"
+            BASE_CFLAGS="$BASE_CFLAGS -isysroot $MACOS_SDK_PATH -mmacosx-version-min=$MACOS_DEPLOYMENT_TARGET"
+            BASE_CXXFLAGS="$BASE_CXXFLAGS -isysroot $MACOS_SDK_PATH -mmacosx-version-min=$MACOS_DEPLOYMENT_TARGET"
+            BASE_LDFLAGS="$BASE_LDFLAGS -isysroot $MACOS_SDK_PATH -mmacosx-version-min=$MACOS_DEPLOYMENT_TARGET"
             ;;
         *)
             echo "Unhandled OS: $OS" >&2
