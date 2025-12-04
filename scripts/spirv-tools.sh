@@ -40,8 +40,10 @@ build() {
     ninja install
 
     # Remove dynamic libs if they were built
+    rm -f "${OUTPUT_BASE}/bin/libSPIRV-Tools-shared.so"*
     rm -f "${OUTPUT_BASE}/lib/libSPIRV-Tools-shared.dll.a"
     rm -f "${OUTPUT_BASE}/bin/libSPIRV-Tools-shared.dll"
+    rm -f "${OUTPUT_BASE}/bin/libSPIRV-Tools-shared."*dylib
 }
 
 run "$@"

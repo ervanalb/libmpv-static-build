@@ -124,7 +124,8 @@ pl_has_lcms=1
 pl_has_libdovi=0
 pl_has_opengl=1
 pl_has_shaderc=1
-pl_has_vk_proc_addr=1
+pl_has_vk_proc_addr=0
+pl_has_vulkan=0
 pl_has_xxhash=1
 
 Name: libplacebo

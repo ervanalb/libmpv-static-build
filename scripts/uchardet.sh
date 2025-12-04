@@ -41,9 +41,10 @@ build() {
     ninja install
 
     # Remove dynamic libs if they were built
+    rm -f "${OUTPUT_BASE}/lib/libuchardet.so"*
     rm -f "${OUTPUT_BASE}/lib/libuchardet.dll.a"
     rm -f "${OUTPUT_BASE}/bin/libuchardet.dll"
-    rm -f "${OUTPUT_BASE}/lib/libuchardet.so"*
+    rm -f "${OUTPUT_BASE}/lib/libuchardet."*dylib
 }
 
 run "$@"
